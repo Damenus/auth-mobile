@@ -24,6 +24,13 @@ public class Product {
         this.quantity = 0;
     }
 
+    public Product(String modelName, String manufacturerName, Double price, int quantity) {
+        this.modelName = modelName;
+        this.manufacturerName = manufacturerName;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
     public Long getId() {
         return id;
     }
@@ -58,6 +65,14 @@ public class Product {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public void increaseQuantity(int quantity) {
+        this.quantity += quantity;
+    }
+
+    public void decreaseQuantity(int quantity) {
+        this.quantity -= quantity;
     }
 
     @Override
