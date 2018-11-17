@@ -1,4 +1,4 @@
-package pl.darczuk.warehouse;
+package java.pl.darczuk.warehouse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
