@@ -1,15 +1,12 @@
-package pl.darczuk.warehouse.entity;
+package pl.darczuk.warehouse.activity.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.Objects;
 
-@Entity
 public class Product implements Serializable {
-    @Id
-    @GeneratedValue
     private Long id;
     private String modelName;
     private String manufacturerName;
@@ -29,7 +26,8 @@ public class Product implements Serializable {
         this.quantity = 0;
     }
 
-    public Product(String modelName, String manufacturerName, Double price, int quantity) {
+    public Product(Long id, String modelName, String manufacturerName, Double price, int quantity) {
+        this.id = id;
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
@@ -97,15 +95,48 @@ public class Product implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
         return quantity == product.quantity &&
-                Objects.equals(id, product.id) &&
-                Objects.equals(modelName, product.modelName) &&
-                Objects.equals(manufacturerName, product.manufacturerName) &&
-                Objects.equals(price, product.price);
+                id == product.id &&
+                modelName == product.modelName &&
+                manufacturerName == product.manufacturerName &&
+                price == product.price;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, modelName, manufacturerName, price, quantity);
+        return id.hashCode() + modelName.hashCode() + manufacturerName.hashCode();
     }
+
+    //@Override
+    public int describeContents() {
+        return 0;
+    }
+
+   // @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(modelName);
+        dest.writeString(manufacturerName);
+        dest.writeDouble(price);
+        dest.writeInt(quantity);
+    }
+
+    public static final Parcelable.Creator<Product> CREATOR = new Parcelable.Creator<Product>() {
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
+
+    private Product(Parcel in) {
+        id = in.readLong();
+        modelName = in.readString();
+        manufacturerName = in.readString();
+        price = in.readDouble();
+        quantity = in.readInt();
+    }
+
 }
