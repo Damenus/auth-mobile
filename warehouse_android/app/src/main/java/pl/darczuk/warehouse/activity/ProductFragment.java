@@ -1,6 +1,8 @@
 package pl.darczuk.warehouse.activity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -66,12 +68,19 @@ public class ProductFragment extends Fragment {
         }
     }
 
+    private String getToken() {
+        SharedPreferences sharedPref = this.getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
+        String defaultValue = "";
+        String token = sharedPref.getString("Token", defaultValue);
+        return token;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         JSONArray productsJson = null;
         try {
-            productsJson = new JSONArray(HttpClient.getRequest("/product"));
+            productsJson = new JSONArray(HttpClient.getRequest("/product", getToken()));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -116,7 +125,7 @@ public class ProductFragment extends Fragment {
 
             JSONArray productsJson = null;
             try {
-                productsJson = new JSONArray(HttpClient.getRequest("/product"));
+                productsJson = new JSONArray(HttpClient.getRequest("/product", getToken()));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -149,6 +158,8 @@ public class ProductFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+
         if (context instanceof OnListFragmentInteractionListener) {
             mListener = (OnListFragmentInteractionListener) context;
         } else {

@@ -45,7 +45,7 @@ public class WarehouseCommandLineRunner implements CommandLineRunner {
         userRepository.save(
                 new User("employee2", "admin", Role.EMPLOYEE));
         userRepository.save(
-                new User("dd", "dd", Role.MENAGER));
+                new User("admin", "admin", Role.MENAGER));
 
 
         userRepository.findAll().forEach(System.out::println);

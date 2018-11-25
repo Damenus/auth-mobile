@@ -1,6 +1,9 @@
 package pl.darczuk.warehouse.activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,6 +27,18 @@ public class ProductDetailsActivity extends AppCompatActivity {
     EditText editTextNumber;
     TextView textView19;
 
+
+    public Activity getActivity(){
+        return this;
+    }
+
+    private String getRole() {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
+        String defaultValue = "";
+        String token = sharedPref.getString("Role", defaultValue);
+        return token;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,15 +47,23 @@ public class ProductDetailsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Deleted", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                HttpClient.deleteProduct(product);
-                finish();
-            }
-        });
+
+        if (getRole().equals("MENAGER")) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Deleted", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    HttpClient.deleteProduct(product);
+                    finish();
+                }
+            });
+        } else {
+            fab.setVisibility(View.GONE);
+        }
+
+
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 

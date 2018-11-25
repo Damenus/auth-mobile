@@ -9,9 +9,10 @@ import pl.darczuk.warehouse.entity.Product;
 import org.springframework.web.bind.annotation.*;
 import pl.darczuk.warehouse.entity.Role;
 import pl.darczuk.warehouse.entity.User;
+import pl.darczuk.warehouse.security.TokenGenerator;
 
 import java.security.Principal;
-import java.util.List;
+import java.util.*;
 
 @RestController
 //@EnableOAuth2Sso
@@ -19,28 +20,43 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 
     private WarehouseRepository repository;
     private UserRepository userRepository;
+    //private TokenRepository tokenRepository;
+    private ArrayList<String> tokens = new ArrayList<>() ;
 
-    @RequestMapping("/user")
-    public Principal user(Principal principal) {
-        return principal;
-    }
+    private TokenGenerator tokenGenerator = new TokenGenerator();
 
-    @PostMapping("/api/v1/login")
+    @PostMapping("/login")
     public String login(@RequestParam String login, @RequestParam String password) {
-        //userRepository.findOne()
-        return "DUPA"+password;
+        User user = userRepository.findByLogin(login);
+        if (user.getPassword().equals(password)) {
+            String token = tokenGenerator.createToken(user);
+            tokens.add(token);
+            return token;
+        }
+        else
+            return "";
     }
 
-    @PostMapping("/api/v1/registration")
-    public String registration(@RequestParam String login, @RequestParam String password, @RequestParam Role role) {
-        userRepository.save(new User(login, password, role));
-        return "DUPA"+password;
-    }
 
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**", "/error**").permitAll().anyRequest()
-//                .authenticated();
+    @PostMapping("/registration")
+    public User registration(@RequestParam String login, @RequestParam String password, @RequestParam String role) {
+
+        Role uRole;
+
+        if (role == "MENAGER") {
+            uRole = Role.MENAGER;
+        } else  {
+            uRole = Role.EMPLOYEE;
+        }
+
+        User newUser = new User(login, password, uRole);
+        return userRepository.save(newUser);
+    }
+//
+//    @PostMapping("/registration")
+//    public User registration(@RequestBody User user) {
+//
+//        return userRepository.save(user);
 //    }
 
     public WarehouseController(WarehouseRepository repository, UserRepository userRepository) {
@@ -49,11 +65,19 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
         this.userRepository = userRepository;
     }
 
+    private boolean checkIfTokenExist(String token) {
+
+        return tokens.contains(token);
+    }
+
     @GetMapping("/api/v1/product")
     @ResponseBody
-    public List<Product> getAllProducts() {
+    public List<Product> getAllProducts(@RequestHeader(value="Authorization") String token) {
 
-        return repository.findAll();
+        if (checkIfTokenExist(token))
+            return repository.findAll();
+        else
+            return null;
     }
 
     @GetMapping("/api/v1/product/{id}")
@@ -97,20 +121,4 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
         return repository.save(updatedProduct);
     }
 
-    @PostMapping("/registration")
-    public User registration(@RequestBody User user) {
-
-        return userRepository.save(user);
-    }
-
-//    @PostMapping("/login")
-//    public User login(@RequestBody User user) {
-//
-//        return userRepository.save(newProduct);
-//    }
-
-    //@RequestMapping("/")
-    //public String index() {
-      //  return "Greetings from Spring Boot!";
-    //}
 }

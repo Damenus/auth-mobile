@@ -1,8 +1,10 @@
 package pl.darczuk.warehouse.activity;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -42,6 +44,18 @@ public class MainActivity extends AppCompatActivity implements ProductFragment.O
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private Properties properties;
+
+    public Activity getActivity(){
+        return this;
+    }
+
+    private String getToken() {
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        String defaultValue = "";
+        String token = sharedPref.getString("Token", defaultValue);
+        return token;
+    }
 
 
     @Override
@@ -51,12 +65,14 @@ public class MainActivity extends AppCompatActivity implements ProductFragment.O
         Bundle bundle = new Bundle();
         bundle.putSerializable("Product", product);
         activityIntent.putExtras(bundle);
+        activityIntent.putExtra("token", getToken());
         startActivity(activityIntent);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -67,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements ProductFragment.O
             public void onClick(View view) {
                 Intent activityIntent;
                 activityIntent = new Intent(getBaseContext(), EditProductActivity.class);
+                activityIntent.putExtra("token", getToken());
                 startActivity(activityIntent);
             }
         });

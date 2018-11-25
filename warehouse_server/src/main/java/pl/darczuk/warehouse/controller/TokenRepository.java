@@ -2,9 +2,8 @@ package pl.darczuk.warehouse.controller;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import pl.darczuk.warehouse.entity.User;
+import pl.darczuk.warehouse.security.Token;
 
-@RepositoryRestResource
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByLogin(String login);
+//@RepositoryRestResource
+public interface TokenRepository {//extends JpaRepository<String, Long> {
 }

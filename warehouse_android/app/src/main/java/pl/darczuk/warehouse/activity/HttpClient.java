@@ -1,6 +1,8 @@
 package pl.darczuk.warehouse.activity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.JsonReader;
@@ -52,10 +54,11 @@ public class HttpClient  {
 
     static DefaultHttpClient instance;
 
-    public static String getRequest(String parametr) {
+
+    public static String getRequest(String parametr, String token) {
         try {
             HttpClient.HttpClientTask mAuthTask = new HttpClient.HttpClientTask();
-            String response = mAuthTask.execute(parametr).get();
+            String response = mAuthTask.execute(parametr, token).get();
             return response;
 
         } catch (ExecutionException e) {
@@ -594,6 +597,7 @@ public class HttpClient  {
     protected String doInBackground(String... params) {
 
         String stringUrl = params[0];
+        String token = params[1];
         String result = "";
 
         try {
@@ -606,7 +610,7 @@ public class HttpClient  {
           //  connection.setRequestMethod(REQUEST_METHOD);
           //  connection.setReadTimeout(READ_TIMEOUT);
           //  connection.setConnectTimeout(CONNECTION_TIMEOUT);
-
+            connection.setRequestProperty ("Authorization", token);
             connection.connect();
 
             InputStreamReader streamReader = new

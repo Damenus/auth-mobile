@@ -3,7 +3,10 @@ package pl.darczuk.warehouse.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -45,6 +48,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import pl.darczuk.warehouse.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -77,6 +84,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
+    public Activity getActivity() {
+        return this;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +118,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        Button registrationButton = findViewById(R.id.buttonRegistration);
+        registrationButton.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent activityIntent;
+                    activityIntent = new Intent(getBaseContext(), RegistrationActivity.class);
+                    startActivity(activityIntent);
+                }
+            }
+
+        );
     }
 
     private void populateAutoComplete() {
@@ -316,6 +340,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         private final String mEmail;
         private final String mPassword;
 
+        String role;
+        String token;
+
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
@@ -328,7 +355,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             String result = "";
 
             try {
-                URL myUrl = new URL(Properties.getInstance().WAREHOUSE_URL+Properties.getInstance().WAREHOUSE_API + "/login");
+                URL myUrl = new URL(Properties.getInstance().WAREHOUSE_URL+ "/login");
 
                 HttpURLConnection connection =(HttpURLConnection) myUrl.openConnection();
                 //Set methods and timeouts
@@ -342,8 +369,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 connection.setDoOutput(true);
 
                 Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("login", "admin")
-                        .appendQueryParameter("password", "admin");
+                        .appendQueryParameter("login", mEmail)
+                        .appendQueryParameter("password", mPassword);
                 String query = builder.build().getEncodedQuery();
 
                 OutputStream os = connection.getOutputStream();
@@ -372,11 +399,41 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 result = stringBuilder.toString(); //if token zaloguj jak -1 to nie loguj
 
+
+
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            Jws<Claims> jws = null;
+
+            try {
+                jws = Jwts.parser()
+                        .setSigningKey("warehousewarehousewarehousewarehousewarehouse")
+                        .parseClaimsJws(result);
+
+                // we can safely trust the JWT
+            }
+            catch (JwtException ex) {
+
+                    // we *cannot* use the JWT as intended by its creator
+            }
+
+            jws.getSignature();
+            role = jws.getBody().get("Role", String.class);
+            token = result;
+
+            SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("Role", role);
+            editor.putString("Token", token);
+            editor.commit();
+
+            SharedPreferences sharedPref2 = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
+            String defaultValue = "";
+            String token = sharedPref2.getString("Role", defaultValue);
 
             if(result == "")
                 return false;
@@ -394,6 +451,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             if (success) {
                 Intent activityIntent = new Intent(getBaseContext(), MainActivity.class);
+                activityIntent.putExtra("token", token);
+                activityIntent.putExtra("role", role);
                 startActivity(activityIntent);
                 finish();
             } else {
