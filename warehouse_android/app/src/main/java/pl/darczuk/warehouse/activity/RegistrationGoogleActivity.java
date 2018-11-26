@@ -1,7 +1,10 @@
 package pl.darczuk.warehouse.activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -43,6 +46,10 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import pl.darczuk.warehouse.R;
 
 public class RegistrationGoogleActivity extends AppCompatActivity implements View.OnClickListener {
@@ -63,6 +70,11 @@ public class RegistrationGoogleActivity extends AppCompatActivity implements Vie
 
     private RadioButton mRadioButtonView;
     private RadioGroup mRadioGroupView;
+
+
+    public Activity getActivity() {
+        return this;
+    }
 
 
     @Override
@@ -102,8 +114,8 @@ public class RegistrationGoogleActivity extends AppCompatActivity implements Vie
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+        //FirebaseUser currentUser = mAuth.getCurrentUser();
+        //updateUI(currentUser);
     }
     // [END on_start_check_user]
 
@@ -340,6 +352,32 @@ public class RegistrationGoogleActivity extends AppCompatActivity implements Vie
                 streamReader.close();
 
                 result = stringBuilder.toString(); //if token zaloguj jak -1 to nie loguj
+
+
+                Jws<Claims> jws = null;
+
+
+                try {
+                    jws = Jwts.parser()
+                            .setSigningKey("warehousewarehousewarehousewarehousewarehouse")
+                            .parseClaimsJws(result);
+
+                    // we can safely trust the JWT
+                }
+                catch (JwtException ex) {
+
+                    // we *cannot* use the JWT as intended by its creator
+                }
+
+                jws.getSignature();
+                role = jws.getBody().get("Role", String.class);
+                token = result;
+
+                SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("Role", role);
+                editor.putString("Token", token);
+                editor.commit();
 
             } catch (IOException e) {
                 e.printStackTrace();

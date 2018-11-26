@@ -141,9 +141,12 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
         if (mapa != null) {
             String email = mapa.get("email");
             User user = userRepository.findByLogin(email);
-            String token = tokenGenerator.createToken(user);
-            tokens.add(token);
-            return token;
+            if (user != null) {
+                String token = tokenGenerator.createToken(user);
+                tokens.add(token);
+                return token;
+            } else
+                return "";
         }
 
         return "";

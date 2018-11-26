@@ -63,8 +63,8 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
-    @VisibleForTesting
-    public ProgressDialog mProgressDialog;
+  //  @VisibleForTesting
+   // public ProgressDialog mProgressDialog;
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
@@ -142,26 +142,6 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
                     e.getMessage();
                 }
 
-//                HttpClient.postGoogleSingIn(idToken);
-
-//                org.apache.http.client.HttpClient httpClient = new org.apache.http.impl.client.DefaultHttpClient();
-//                HttpPost httpPost = new HttpPost( Properties.getInstance().WAREHOUSE_URL + "/tokensignin");
-//
-//                try {
-//                    List nameValuePairs = new ArrayList(1);
-//                    nameValuePairs.add(new BasicNameValuePair("idToken", idToken));
-//                    httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//
-//                    HttpResponse response = httpClient.execute(httpPost);
-//                    int statusCode = response.getStatusLine().getStatusCode();
-//                    final String responseBody = EntityUtils.toString(response.getEntity());
-//                    Log.i(TAG, "Signed in as: " + responseBody);
-//                } catch (ClientProtocolException e) {
-//                    Log.e(TAG, "Error sending ID token to backend.", e);
-//                } catch (IOException e) {
-//                    Log.e(TAG, "Error sending ID token to backend.", e);
-//                }
-
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
@@ -178,7 +158,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
         // [START_EXCLUDE silent]
-        showProgressDialog();
+     //   showProgressDialog();
         // [END_EXCLUDE]
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -199,7 +179,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
                         }
 
                         // [START_EXCLUDE]
-                        hideProgressDialog();
+                   //     hideProgressDialog();
                         // [END_EXCLUDE]
                     }
                 });
@@ -242,7 +222,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void updateUI(FirebaseUser user) {
-        hideProgressDialog();
+       // hideProgressDialog();
         if (user != null) {
             mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
             mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
@@ -270,21 +250,21 @@ public class GoogleSignInActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    public void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage(getString(R.string.loading));
-            mProgressDialog.setIndeterminate(true);
-        }
-
-        mProgressDialog.show();
-    }
-
-    public void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-    }
+//    public void showProgressDialog() {
+//        if (mProgressDialog == null) {
+//            mProgressDialog = new ProgressDialog(this);
+//            mProgressDialog.setMessage(getString(R.string.loading));
+//            mProgressDialog.setIndeterminate(true);
+//        }
+//
+//        mProgressDialog.show();
+//    }
+//
+//    public void hideProgressDialog() {
+//        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+//            mProgressDialog.dismiss();
+//        }
+//    }
 
     public class GoogleSingInTask extends AsyncTask<String, Void, String> {
 
