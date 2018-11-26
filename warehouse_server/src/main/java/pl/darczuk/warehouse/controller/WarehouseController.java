@@ -191,7 +191,7 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 
             Role uRole;
 
-            if (role == "MENAGER") {
+            if (role.equals("MENAGER")) {
                 uRole = Role.MENAGER;
             } else  {
                 uRole = Role.EMPLOYEE;
@@ -201,10 +201,14 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
         if (mapa != null) {
             String email = mapa.get("email");
             User newUser = new User(email, "", uRole);
-            userRepository.save(newUser);
-            String token = tokenGenerator.createToken(newUser);
-            tokens.add(token);
-            return token;
+            User user = userRepository.findByLogin(email);
+            if (user == null) {
+                userRepository.save(newUser);
+                String token = tokenGenerator.createToken(newUser);
+                tokens.add(token);
+                return token;
+            }
+            return "";
         }
 
 
