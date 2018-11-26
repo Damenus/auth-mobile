@@ -50,6 +50,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pl.darczuk.warehouse.activity.MainActivity" />
         </activity>
+        <activity android:name=".activity.GoogleSignInActivity" />
+        <activity android:name=".activity.RegistrationGoogleActivity"></activity>
     </application>
 
 </manifest>

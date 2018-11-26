@@ -75,6 +75,12 @@
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/buttonGoogleLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SIGN IN WITH GOOGLE" />
+
             <Button
                 android:id="@+id/buttonRegistration"
                 android:layout_width="match_parent"

@@ -101,6 +101,17 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderMan
 
         mRadioGroupView = findViewById(R.id.radioGroup);
 
+        Button registerByGoogleButton = (Button) findViewById(R.id.registerByGoogleButton);
+        registerByGoogleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent activityIntent;
+                activityIntent = new Intent(getBaseContext(), RegistrationGoogleActivity.class);
+                //activityIntent.putExtra("token", getToken());
+                startActivity(activityIntent);
+            }
+        });
+
         }
 
     private void populateAutoComplete() {

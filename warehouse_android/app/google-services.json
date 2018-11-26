@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "14642201020",
+    "firebase_url": "https://warehouseandroid-b0a63.firebaseio.com",
+    "project_id": "warehouseandroid-b0a63",
+    "storage_bucket": "warehouseandroid-b0a63.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:14642201020:android:42ca24ae08ea5325",
+        "android_client_info": {
+          "package_name": "pl.darczuk.warehouse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "14642201020-vrflaea97vs3sg8s1f8683meo5p47blb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pl.darczuk.warehouse",
+            "certificate_hash": "be01a3ac594e92dcb457d6d5872cfb0bad75d384"
+          }
+        },
+        {
+          "client_id": "14642201020-6embjvm4hfmufb1bcf7ee323i52lffnu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNzAppIF33FyLtPjtbXbOdxEOeFrExeSo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "14642201020-6embjvm4hfmufb1bcf7ee323i52lffnu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

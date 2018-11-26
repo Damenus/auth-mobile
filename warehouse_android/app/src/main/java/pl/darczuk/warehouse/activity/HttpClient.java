@@ -68,6 +68,34 @@ public class HttpClient  {
         }
     }
 
+    public static String postGoogleSingIn(String token) {
+        try {
+            HttpClient.GoogleSingInTask mAuthTask = new HttpClient.GoogleSingInTask();
+            String response = mAuthTask.execute(token).get();
+            return response;
+
+        } catch (ExecutionException e) {
+            return e.getMessage();
+        } catch (InterruptedException e) {
+            return e.getMessage();
+        }
+    }
+
+
+    public static String postGoogleRegistration(String token, String role) {
+        try {
+            HttpClient.GoogleRegistrationTask mAuthTask = new HttpClient.GoogleRegistrationTask();
+            String response = mAuthTask.execute(token, role).get();
+            return response;
+
+        } catch (ExecutionException e) {
+            return e.getMessage();
+        } catch (InterruptedException e) {
+            return e.getMessage();
+        }
+    }
+
+
     public static String saveProduct(Product product) {
         try {
             HttpClient.SaveProductTask mAuthTask = new HttpClient.SaveProductTask();
@@ -292,6 +320,208 @@ public class HttpClient  {
                 result = String.valueOf(responseCode);
 
             } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+        }
+
+        @Override
+        protected void onCancelled() {
+
+        }
+    }
+
+    public static class GoogleRegistrationTask extends AsyncTask<String, Void, String> {
+
+        private String url;
+
+        public GoogleRegistrationTask() {
+            this.url = Properties.getInstance().WAREHOUSE_URL + "/tokenregistration";
+        }
+
+        private byte[] getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
+        {
+            StringBuilder result = new StringBuilder();
+            boolean first = true;
+
+            for (NameValuePair pair : params)
+            {
+                if (first)
+                    first = false;
+                else
+                    result.append("&");
+
+                result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
+                result.append("=");
+                result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+            }
+
+            return result.toString().getBytes("UTF-8");
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String result = "";
+            String token = params[0];
+            String role = params[1];
+
+            try {
+
+                URL myUrl = new URL(url);
+
+                HttpURLConnection connection =(HttpURLConnection) myUrl.openConnection();
+                //Set methods and timeouts
+                int READ_TIMEOUT = 10000;
+                int CONNECTION_TIMEOUT = 15000;
+
+                connection.setRequestMethod("POST");
+                connection.setReadTimeout(READ_TIMEOUT);
+                connection.setConnectTimeout(CONNECTION_TIMEOUT);
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+
+                Uri.Builder builder = new Uri.Builder()
+                        .appendQueryParameter("role", role)
+                        .appendQueryParameter("idTokenString", token);
+                String query = builder.build().getEncodedQuery();
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(query);
+                writer.flush();
+                writer.close();
+                os.close();
+
+                connection.connect();
+
+                InputStreamReader streamReader = new
+                        InputStreamReader(connection.getInputStream());
+
+                BufferedReader reader = new BufferedReader(streamReader);
+                StringBuilder stringBuilder = new StringBuilder();
+
+                String inputLine="";
+                while((inputLine = reader.readLine()) != null){
+                    stringBuilder.append(inputLine);
+                }
+
+                reader.close();
+                streamReader.close();
+
+                result = stringBuilder.toString(); //if token zaloguj jak -1 to nie loguj
+
+            } catch (IOException e) {
+                e.printStackTrace();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+        }
+
+        @Override
+        protected void onCancelled() {
+
+        }
+    }
+
+    public static class GoogleSingInTask extends AsyncTask<String, Void, String> {
+
+        private String url;
+
+        public GoogleSingInTask() {
+            this.url = Properties.getInstance().WAREHOUSE_URL + "/tokensignin";
+        }
+
+        private byte[] getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
+        {
+            StringBuilder result = new StringBuilder();
+            boolean first = true;
+
+            for (NameValuePair pair : params)
+            {
+                if (first)
+                    first = false;
+                else
+                    result.append("&");
+
+                result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
+                result.append("=");
+                result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+            }
+
+            return result.toString().getBytes("UTF-8");
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String result = "";
+            String token = params[0];
+
+            try {
+
+                URL myUrl = new URL(url);
+
+                HttpURLConnection connection =(HttpURLConnection) myUrl.openConnection();
+                //Set methods and timeouts
+                int READ_TIMEOUT = 10000;
+                int CONNECTION_TIMEOUT = 15000;
+
+                connection.setRequestMethod("POST");
+                connection.setReadTimeout(READ_TIMEOUT);
+                connection.setConnectTimeout(CONNECTION_TIMEOUT);
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+
+                Uri.Builder builder = new Uri.Builder()
+                        .appendQueryParameter("idTokenString", token);
+                String query = builder.build().getEncodedQuery();
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(query);
+                writer.flush();
+                writer.close();
+                os.close();
+
+                connection.connect();
+
+                InputStreamReader streamReader = new
+                        InputStreamReader(connection.getInputStream());
+
+                BufferedReader reader = new BufferedReader(streamReader);
+                StringBuilder stringBuilder = new StringBuilder();
+
+                String inputLine="";
+                while((inputLine = reader.readLine()) != null){
+                    stringBuilder.append(inputLine);
+                }
+
+                reader.close();
+                streamReader.close();
+
+                result = stringBuilder.toString(); //if token zaloguj jak -1 to nie loguj
+
+            } catch (IOException e) {
+                e.printStackTrace();
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
