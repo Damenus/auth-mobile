@@ -1,0 +1,14 @@
+pl/darczuk/warehouse/controller/WarehouseController.class
+pl/darczuk/warehouse/controller/WarehouseRepository.class
+pl/darczuk/warehouse/security/TokenGenerator.class
+pl/darczuk/warehouse/security/Token.class
+pl/darczuk/warehouse/controller/TokenRepository.class
+pl/darczuk/warehouse/entity/Product.class
+pl/darczuk/warehouse/security/AuthController.class
+pl/darczuk/warehouse/controller/WarehouseCommandLineRunner.class
+pl/darczuk/warehouse/security/SecurityConfig.class
+pl/darczuk/warehouse/controller/UserRepository.class
+pl/darczuk/warehouse/entity/Role.class
+pl/darczuk/warehouse/WarehouseApplication.class
+pl/darczuk/warehouse/controller/ProductNotFoundException.class
+pl/darczuk/warehouse/entity/User.class

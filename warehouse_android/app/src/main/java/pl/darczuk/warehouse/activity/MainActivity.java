@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements ProductFragment.O
     }
 
     private String getToken() {
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
         String defaultValue = "";
         String token = sharedPref.getString("Token", defaultValue);
         return token;
@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements ProductFragment.O
                 startActivity(activityIntent);
             }
         });
+
 
     }
 

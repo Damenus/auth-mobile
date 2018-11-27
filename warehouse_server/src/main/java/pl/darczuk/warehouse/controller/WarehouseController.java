@@ -94,6 +94,11 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
             return "";
     }
 
+    @PostMapping("/logout")
+    public void logout(@RequestHeader(value="Authorization") String token) {
+        tokens.remove(token);
+    }
+
     @PostMapping("/tokensignin")
     public String tokenSignIn(@RequestParam String idTokenString) {
 
@@ -262,16 +267,23 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 
     @GetMapping("/api/v1/product/{id}")
     @ResponseBody
-    public Product getProduct(@PathVariable Long id) {
+    public Product getProduct(@RequestHeader(value="Authorization") String token, @PathVariable Long id) {
 
-        return repository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+        if (checkIfTokenExist(token)) {
+            return repository.findById(id)
+                    .orElseThrow(() -> new ProductNotFoundException(id));
+        } else
+            return null;
     }
 
     @PostMapping("/api/v1/product")
-    public Product addProduct(@RequestParam String modelName, @RequestParam String manufacturerName, @RequestParam String price) {
-        Product newProduct = new Product(modelName, manufacturerName, Double.valueOf(price));
-        return repository.save(newProduct);
+    public Product addProduct(@RequestHeader(value="Authorization") String token, @RequestParam String modelName, @RequestParam String manufacturerName, @RequestParam String price) {
+
+        if (checkIfTokenExist(token)) {
+            Product newProduct = new Product(modelName, manufacturerName, Double.valueOf(price));
+            return repository.save(newProduct);
+        } else
+            return null;
     }
 
 //    @PostMapping("/api/v1/product")
@@ -281,24 +293,32 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 //    }
 
     @DeleteMapping("/api/v1/product/{id}")
-    public void deleteProduct(@PathVariable Long id) {
-        repository.deleteById(id);
+    public void deleteProduct(@RequestHeader(value="Authorization") String token, @PathVariable Long id) {
+        if (checkIfTokenExist(token)) {
+            repository.deleteById(id);
+        }
     }
 
     @GetMapping("/api/v1/product/{id}/increase/{quantity}")
-    public Product increaseQuantityProduct(@PathVariable Long id, @PathVariable Integer quantity) {
+    public Product increaseQuantityProduct(@RequestHeader(value="Authorization") String token, @PathVariable Long id, @PathVariable Integer quantity) {
 
-        Product updatedProduct = repository.findById(id).get();
-        updatedProduct.increaseQuantity(quantity);
-        return repository.save(updatedProduct);
+        if (checkIfTokenExist(token)) {
+            Product updatedProduct = repository.findById(id).get();
+            updatedProduct.increaseQuantity(quantity);
+            return repository.save(updatedProduct);
+        } else
+            return null;
     }
 
     @GetMapping("/api/v1/product/{id}/decrease/{quantity}")
-    public Product decreaseQuantityProduct(@PathVariable Long id, @PathVariable Integer quantity) {
+    public Product decreaseQuantityProduct(@RequestHeader(value="Authorization") String token, @PathVariable Long id, @PathVariable Integer quantity) {
 
-        Product updatedProduct = repository.findById(id).get();
-        updatedProduct.decreaseQuantity(quantity);
-        return repository.save(updatedProduct);
+        if (checkIfTokenExist(token)) {
+            Product updatedProduct = repository.findById(id).get();
+            updatedProduct.decreaseQuantity(quantity);
+            return repository.save(updatedProduct);
+        } else
+            return null;
     }
 
 }

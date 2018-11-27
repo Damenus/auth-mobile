@@ -39,6 +39,13 @@ public class ProductDetailsActivity extends AppCompatActivity {
         return token;
     }
 
+    private String getToken() {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
+        String defaultValue = "";
+        String token = sharedPref.getString("Token", defaultValue);
+        return token;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +61,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Snackbar.make(view, "Deleted", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
-                    HttpClient.deleteProduct(product);
+                    HttpClient.deleteProduct(product, getToken());
                     finish();
                 }
             });
@@ -130,7 +137,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                String result = HttpClient.increaseProduct(product, editTextNumber.getText().toString());
+                String result = HttpClient.increaseProduct(product, editTextNumber.getText().toString(), getToken());
 
                 JSONObject productJson = null;
                 try {
@@ -156,7 +163,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                String result =HttpClient.decreaseProduct(product, editTextNumber.getText().toString());
+                String result =HttpClient.decreaseProduct(product, editTextNumber.getText().toString(), getToken());
 
                 JSONObject productJson = null;
                 try {

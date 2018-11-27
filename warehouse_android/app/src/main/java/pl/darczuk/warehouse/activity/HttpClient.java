@@ -96,9 +96,9 @@ public class HttpClient  {
     }
 
 
-    public static String saveProduct(Product product) {
+    public static String saveProduct(Product product, String token) {
         try {
-            HttpClient.SaveProductTask mAuthTask = new HttpClient.SaveProductTask();
+            HttpClient.SaveProductTask mAuthTask = new HttpClient.SaveProductTask(token);
             String response = mAuthTask.execute(product).get();
             return response;
 
@@ -109,10 +109,10 @@ public class HttpClient  {
         }
     }
 
-    public static String deleteProduct(Product product) {
+    public static String deleteProduct(Product product, String token) {
         try {
             HttpClient.DeleteProductTask mAuthTask = new HttpClient.DeleteProductTask();
-            String response = mAuthTask.execute(product.getId().toString()).get();
+            String response = mAuthTask.execute(product.getId().toString(), token).get();
             return response;
 
         } catch (ExecutionException e) {
@@ -135,10 +135,10 @@ public class HttpClient  {
         }
     }
 
-    public static String increaseProduct(Product product, String quantity) {
+    public static String increaseProduct(Product product, String quantity, String token) {
         try {
             HttpClient.IncreaseProductTask mAuthTask = new HttpClient.IncreaseProductTask();
-            String response = mAuthTask.execute(String.valueOf(product.getId()), quantity).get();
+            String response = mAuthTask.execute(String.valueOf(product.getId()), quantity, token).get();
             return response;
 
         } catch (ExecutionException e) {
@@ -148,10 +148,10 @@ public class HttpClient  {
         }
     }
 
-    public static String decreaseProduct(Product product, String quantity) {
+    public static String decreaseProduct(Product product, String quantity, String token) {
         try {
             HttpClient.DecreaseProductTask mAuthTask = new HttpClient.DecreaseProductTask();
-            String response = mAuthTask.execute(String.valueOf(product.getId()), quantity).get();
+            String response = mAuthTask.execute(String.valueOf(product.getId()), quantity, token).get();
             return response;
 
         } catch (ExecutionException e) {
@@ -174,6 +174,7 @@ public class HttpClient  {
 
             String stringUrl = "/product/" + params[0] + "/decrease/" + params[1];
             String result = "";
+            String token = params[2];
 
             try {
 
@@ -185,6 +186,7 @@ public class HttpClient  {
                 //  connection.setRequestMethod(REQUEST_METHOD);
                 //  connection.setReadTimeout(READ_TIMEOUT);
                 //  connection.setConnectTimeout(CONNECTION_TIMEOUT);
+                connection.setRequestProperty ("Authorization", token);
 
                 connection.connect();
 
@@ -238,6 +240,7 @@ public class HttpClient  {
 
             String stringUrl = "/product/" + params[0] + "/increase/" + params[1];
             String result = "";
+            String token = params[2];
 
             try {
 
@@ -249,6 +252,7 @@ public class HttpClient  {
                 //  connection.setRequestMethod(REQUEST_METHOD);
                 //  connection.setReadTimeout(READ_TIMEOUT);
                 //  connection.setConnectTimeout(CONNECTION_TIMEOUT);
+                connection.setRequestProperty ("Authorization", token);
 
                 connection.connect();
 
@@ -302,6 +306,7 @@ public class HttpClient  {
 
             String stringUrl = "/product/" + params[0];
             String result = "";
+            String token = params[1];
 
             try {
 
@@ -314,6 +319,7 @@ public class HttpClient  {
                 //  connection.setReadTimeout(READ_TIMEOUT);
                 //  connection.setConnectTimeout(CONNECTION_TIMEOUT);
                 connection.setRequestMethod("DELETE");
+                connection.setRequestProperty ("Authorization", token);
 
                 connection.connect();
                 int responseCode = connection.getResponseCode();
@@ -386,6 +392,7 @@ public class HttpClient  {
                 connection.setConnectTimeout(CONNECTION_TIMEOUT);
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
+
 
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("role", role)
@@ -488,6 +495,7 @@ public class HttpClient  {
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
 
+
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("idTokenString", token);
                 String query = builder.build().getEncodedQuery();
@@ -542,11 +550,13 @@ public class HttpClient  {
     public static class SaveProductTask extends AsyncTask<Product, Void, String> {
 
         private String url;
+        private String token;
 
-        public SaveProductTask() {
+        public SaveProductTask(String token) {
             this.url = Properties.getInstance().WAREHOUSE_URL +
                     Properties.getInstance().WAREHOUSE_API +
                     Properties.getInstance().WAREHOUSE_PRODUCT;
+            this.token = token;
         }
 
         private byte[] getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
@@ -590,6 +600,7 @@ public class HttpClient  {
                 connection.setConnectTimeout(CONNECTION_TIMEOUT);
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
+                connection.setRequestProperty ("Authorization", token);
 
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("modelName", product.getModelName())

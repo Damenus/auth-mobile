@@ -1,6 +1,9 @@
 package pl.darczuk.warehouse.activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,6 +23,18 @@ public class EditProductActivity extends AppCompatActivity {
     EditText editTextModelName;
     EditText editTextManufactureName;
     EditText editTextPrice;
+
+    public Activity getActivity(){
+        return this;
+    }
+
+    private String getToken() {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
+        String defaultValue = "";
+        String token = sharedPref.getString("Token", defaultValue);
+        return token;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +62,7 @@ public class EditProductActivity extends AppCompatActivity {
                 product.setModelName(editTextModelName.getText().toString());
                 product.setManufacturerName(editTextManufactureName.getText().toString());
                 product.setPrice(Double.valueOf(editTextPrice.getText().toString()));
-                HttpClient.saveProduct(product);
+                HttpClient.saveProduct(product, getToken());
 
 //                RestClient client=new RestClient(Properties.getInstance().WAREHOUSE_URL +
 //                        Properties.getInstance().WAREHOUSE_API +
