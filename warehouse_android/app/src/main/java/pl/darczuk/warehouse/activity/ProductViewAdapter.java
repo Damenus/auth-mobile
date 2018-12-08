@@ -8,23 +8,17 @@ import android.widget.TextView;
 
 import pl.darczuk.warehouse.R;
 import pl.darczuk.warehouse.activity.ProductFragment.OnListFragmentInteractionListener;
-import pl.darczuk.warehouse.activity.dummy.DummyContent.DummyItem;
 import pl.darczuk.warehouse.activity.model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
-public class MyProductRecyclerViewAdapter extends RecyclerView.Adapter<MyProductRecyclerViewAdapter.ViewHolder> {
+public class ProductViewAdapter extends RecyclerView.Adapter<ProductViewAdapter.ViewHolder> {
 
-    private final ArrayList<Product> mValues;
+    private List<Product> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyProductRecyclerViewAdapter(ArrayList<Product> items, OnListFragmentInteractionListener listener) {
+    public ProductViewAdapter(ArrayList<Product> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -57,6 +51,11 @@ public class MyProductRecyclerViewAdapter extends RecyclerView.Adapter<MyProduct
     @Override
     public int getItemCount() {
         return mValues.size();
+    }
+
+    public void setProducts(List<Product> products){
+        mValues = products;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

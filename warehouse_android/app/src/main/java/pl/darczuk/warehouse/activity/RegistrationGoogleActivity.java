@@ -51,6 +51,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import pl.darczuk.warehouse.R;
+import pl.darczuk.warehouse.activity.util.Properties;
 
 public class RegistrationGoogleActivity extends AppCompatActivity implements View.OnClickListener {
 

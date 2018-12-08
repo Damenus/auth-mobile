@@ -1,4 +1,4 @@
-package pl.darczuk.warehouse.activity;
+package pl.darczuk.warehouse.activity.util;
 
 public class Properties {
 

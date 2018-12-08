@@ -1,9 +1,11 @@
 package pl.darczuk.warehouse.activity;
 
-import android.app.Activity;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,15 +18,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import pl.darczuk.warehouse.R;
-import pl.darczuk.warehouse.activity.dummy.DummyContent;
-import pl.darczuk.warehouse.activity.dummy.DummyContent.DummyItem;
 import pl.darczuk.warehouse.activity.model.Product;
+import pl.darczuk.warehouse.activity.view.ProductViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * A fragment representing a list of Items.
@@ -41,6 +39,7 @@ public class ProductFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
 
     RecyclerView recyclerView;
+    private ProductViewModel mProductViewModel;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -104,7 +103,7 @@ public class ProductFragment extends Fragment {
             }
         }
 
-        recyclerView.setAdapter(new MyProductRecyclerViewAdapter(products, mListener));
+        recyclerView.setAdapter(new ProductViewAdapter(products, mListener));
 
     }
 
@@ -131,25 +130,46 @@ public class ProductFragment extends Fragment {
             }
 
             ArrayList<Product> products= new ArrayList<Product>();
-            if (productsJson != null) {
-                for (int i=0;i<productsJson.length();i++){
-                    try {
-                        products.add(
-                                new Product(
-                                        Long.decode(productsJson.getJSONObject(i).getString("id")),
-                                        productsJson.getJSONObject(i).getString("modelName"),
-                                        productsJson.getJSONObject(i).getString("manufacturerName"),
-                                        productsJson.getJSONObject(i).getDouble("price"),
-                                        productsJson.getJSONObject(i).getInt("quantity")
-                                )
-                        );
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            products.add(
+                    new Product(
+                            Long.decode("111"),
+                            "modelName",
+                            "manufacturerName",
+                            12.5,
+                            12
+                    )
+            );
 
-            recyclerView.setAdapter(new MyProductRecyclerViewAdapter(products, mListener));
+            final ProductViewAdapter adapter = new ProductViewAdapter(products, mListener);
+            recyclerView.setAdapter(adapter);
+
+            mProductViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
+            mProductViewModel.getAllProducts().observe(this, new Observer<List<Product>>() {
+                @Override
+                public void onChanged(@Nullable List<Product> products) {
+                    adapter.setProducts(products);
+                }
+            });
+
+//            if (productsJson != null) {
+//                for (int i=0;i<productsJson.length();i++){
+//                    try {
+//                        mProductViewModel.insert(
+//                        //products.add(
+//                                new Product(
+//                                        Long.decode(productsJson.getJSONObject(i).getString("id")),
+//                                        productsJson.getJSONObject(i).getString("modelName"),
+//                                        productsJson.getJSONObject(i).getString("manufacturerName"),
+//                                        productsJson.getJSONObject(i).getDouble("price"),
+//                                        productsJson.getJSONObject(i).getInt("quantity")
+//                                )
+//                        );
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+
         }
         return view;
     }

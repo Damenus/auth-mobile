@@ -15,10 +15,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -44,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.darczuk.warehouse.R;
+import pl.darczuk.warehouse.activity.util.Properties;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

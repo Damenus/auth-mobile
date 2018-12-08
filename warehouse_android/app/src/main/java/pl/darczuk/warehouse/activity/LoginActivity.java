@@ -46,10 +46,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GithubAuthCredential;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -71,6 +69,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import pl.darczuk.warehouse.R;
+import pl.darczuk.warehouse.activity.util.Properties;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

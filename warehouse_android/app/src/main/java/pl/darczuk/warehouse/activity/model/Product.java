@@ -1,12 +1,18 @@
 package pl.darczuk.warehouse.activity.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@Entity
 public class Product implements Serializable {
+    @PrimaryKey
+    @NonNull
     private Long id;
     private String modelName;
     private String manufacturerName;
@@ -105,20 +111,6 @@ public class Product implements Serializable {
     public int hashCode() {
 
         return id.hashCode() + modelName.hashCode() + manufacturerName.hashCode();
-    }
-
-    //@Override
-    public int describeContents() {
-        return 0;
-    }
-
-   // @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(id);
-        dest.writeString(modelName);
-        dest.writeString(manufacturerName);
-        dest.writeDouble(price);
-        dest.writeInt(quantity);
     }
 
     public static final Parcelable.Creator<Product> CREATOR = new Parcelable.Creator<Product>() {
