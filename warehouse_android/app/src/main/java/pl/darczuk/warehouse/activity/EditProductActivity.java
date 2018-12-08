@@ -64,28 +64,6 @@ public class EditProductActivity extends AppCompatActivity {
                 product.setPrice(Double.valueOf(editTextPrice.getText().toString()));
                 HttpClient.saveProduct(product, getToken());
 
-//                RestClient client=new RestClient(Properties.getInstance().WAREHOUSE_URL +
-//                        Properties.getInstance().WAREHOUSE_API +
-//                        Properties.getInstance().WAREHOUSE_PRODUCT);
-//
-//                try {
-//                    JSONObject obj = new JSONObject();
-//                    obj.put("modelName", product.getModelName());
-//                    obj.put("manufacturerName", product.getManufacturerName());
-//                    obj.put("price", product.getPrice().toString());
-//
-//                    //client.AddParam("", obj.toString());
-//                    client.AddParam("modelName", product.getModelName());
-//                    client.AddParam("manufacturerName", product.getManufacturerName());
-//                    client.AddParam("price", product.getPrice().toString());
-//
-//                    client.Execute(RestClient.RequestMethod.POST);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-
-//                String response=client.getResponse();
-
                 finish();
             }
         });
