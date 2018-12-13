@@ -4,7 +4,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Entity
 public class Product implements Serializable {
@@ -14,7 +16,8 @@ public class Product implements Serializable {
     private String modelName;
     private String manufacturerName;
     private Double price;
-    private int quantity;
+    private HashMap<String, Integer> quantity;
+    //private int quantity;
 
     public void setId(Long id) {
         this.id = id;
@@ -26,14 +29,26 @@ public class Product implements Serializable {
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
-        this.quantity = 0;
+        this.quantity = new HashMap<>();
+        //this.quantity = 0;
     }
 
     public Product(String modelName, String manufacturerName, Double price, int quantity) {
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
-        this.quantity = quantity;
+        this.quantity = new HashMap<>();
+        this.quantity.put("admin", quantity);
+        //this.quantity = quantity;
+    }
+
+    public Product(ProductDto productDTO, String uuidDevice) {
+        this.id = productDTO.getId();
+        this.modelName = productDTO.getModelName();
+        this.manufacturerName = productDTO.getManufacturerName();
+        this.price = productDTO.getPrice();
+        this.quantity = new HashMap<>();
+        this.quantity.put(uuidDevice, productDTO.getQuantity());
     }
 
     public Long getId() {
@@ -64,20 +79,27 @@ public class Product implements Serializable {
         this.price = price;
     }
 
+    public int getQuantity(String id) {
+        int dd = quantity.getOrDefault(id, 0);
+        return dd;
+    }
+
     public int getQuantity() {
-        return quantity;
+        AtomicInteger sum = new AtomicInteger();
+        quantity.forEach((k,v)-> sum.addAndGet(v));
+        return sum.intValue();
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setQuantity(int quantity, String id) {
+        this.quantity.replace(id, quantity);
     }
 
-    public void increaseQuantity(int quantity) {
-        this.quantity += quantity;
+    public void increaseQuantity(int quantity, String id) {
+        this.quantity.merge(id, quantity, Integer::sum);
     }
 
-    public void decreaseQuantity(int quantity) {
-        this.quantity -= quantity;
+    public void decreaseQuantity(int quantity, String id) {
+        this.quantity.merge(id, quantity, (integer, integer2) -> integer - integer2);
     }
 
     @Override

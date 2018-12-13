@@ -41,6 +41,8 @@ public class ProductFragment extends Fragment {
     RecyclerView recyclerView;
     private ProductViewModel mProductViewModel;
 
+    RestClient restClient;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -62,6 +64,10 @@ public class ProductFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        restClient = new RestClient(this.getActivity().getApplication());
+        mProductViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
+        //mProductViewModel.nuke();
+
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
@@ -77,33 +83,10 @@ public class ProductFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        JSONArray productsJson = null;
-        try {
-            productsJson = new JSONArray(HttpClient.getRequest("/product", getToken()));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        ArrayList<Product> products= new ArrayList<Product>();
-        if (productsJson != null) {
-            for (int i=0;i<productsJson.length();i++){
-                try {
-                    products.add(
-                            new Product(
-                                    Long.decode(productsJson.getJSONObject(i).getString("id")),
-                                    productsJson.getJSONObject(i).getString("modelName"),
-                                    productsJson.getJSONObject(i).getString("manufacturerName"),
-                                    productsJson.getJSONObject(i).getDouble("price"),
-                                    productsJson.getJSONObject(i).getInt("quantity")
-                            )
-                    );
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        recyclerView.setAdapter(new ProductViewAdapter(products, mListener));
+       // List<Product> products = restClient.getAllProducts();
+        //mProductViewModel.insertProducts(products);
+       // recyclerView.setAdapter(new ProductViewAdapter(products, mListener));
 
     }
 
@@ -122,13 +105,6 @@ public class ProductFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
 
-            JSONArray productsJson = null;
-            try {
-                productsJson = new JSONArray(HttpClient.getRequest("/product", getToken()));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
             ArrayList<Product> products= new ArrayList<Product>();
             products.add(
                     new Product(
@@ -143,32 +119,13 @@ public class ProductFragment extends Fragment {
             final ProductViewAdapter adapter = new ProductViewAdapter(products, mListener);
             recyclerView.setAdapter(adapter);
 
-            mProductViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
+
             mProductViewModel.getAllProducts().observe(this, new Observer<List<Product>>() {
                 @Override
                 public void onChanged(@Nullable List<Product> products) {
                     adapter.setProducts(products);
                 }
             });
-
-//            if (productsJson != null) {
-//                for (int i=0;i<productsJson.length();i++){
-//                    try {
-//                        mProductViewModel.insert(
-//                        //products.add(
-//                                new Product(
-//                                        Long.decode(productsJson.getJSONObject(i).getString("id")),
-//                                        productsJson.getJSONObject(i).getString("modelName"),
-//                                        productsJson.getJSONObject(i).getString("manufacturerName"),
-//                                        productsJson.getJSONObject(i).getDouble("price"),
-//                                        productsJson.getJSONObject(i).getInt("quantity")
-//                                )
-//                        );
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
 
         }
         return view;

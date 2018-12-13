@@ -1,6 +1,8 @@
 package pl.darczuk.warehouse.activity;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,12 +22,16 @@ import org.json.JSONObject;
 
 import pl.darczuk.warehouse.R;
 import pl.darczuk.warehouse.activity.model.Product;
+import pl.darczuk.warehouse.activity.view.ProductViewModel;
 
 public class ProductDetailsActivity extends AppCompatActivity {
 
     Product product;
     EditText editTextNumber;
     TextView textView19;
+
+    RestClient restClient;
+    ProductViewModel productViewModel;
 
 
     public Activity getActivity(){
@@ -35,15 +41,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private String getRole() {
         SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
         String defaultValue = "";
-        String token = sharedPref.getString("Role", defaultValue);
-        return token;
-    }
-
-    private String getToken() {
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
-        String defaultValue = "";
-        String token = sharedPref.getString("Token", defaultValue);
-        return token;
+        String role = sharedPref.getString("Role", defaultValue);
+        return role;
     }
 
     @Override
@@ -53,6 +52,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        restClient = new RestClient(this.getApplication());//ViewModelProviders.of(this).get(RestClient.class);
+        productViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         if (getRole().equals("MENAGER")) {
@@ -61,7 +63,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Snackbar.make(view, "Deleted", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
-                    HttpClient.deleteProduct(product, getToken());
+                    //HttpClient.deleteProduct(product, getToken());
+                    //restClient.deleteProduct(product);
+                    productViewModel.delete(product);
                     finish();
                 }
             });
@@ -76,7 +80,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        product = (Product) bundle.getSerializable("Product");
+        Product product2 = (Product) bundle.getSerializable("Product");
+        product = productViewModel.getProductById(product2.getId());
 
         TextView textView10 = findViewById(R.id.textView10);
         textView10.setText("ID");
@@ -137,23 +142,12 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                String result = HttpClient.increaseProduct(product, editTextNumber.getText().toString(), getToken());
+                //product = restClient.increaseProduct(product, editTextNumber.getText().toString());
+                productViewModel.increasing(product, Integer.decode(editTextNumber.getText().toString()));
+                product = productViewModel.getProductById(product.getId());
 
-                JSONObject productJson = null;
-                try {
-                    productJson = new JSONObject(result);
-                    product = new Product(
-                            Long.decode(productJson.getString("id")),
-                            productJson.getString("modelName"),
-                            productJson.getString("manufacturerName"),
-                            productJson.getDouble("price"),
-                            productJson.getInt("quantity")
-                    );
-                    textView19 = findViewById(R.id.textView19);
-                    textView19.setText(String.valueOf(product.getQuantity()));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                textView19 = findViewById(R.id.textView19);
+                textView19.setText(String.valueOf(product.getQuantity()));
                 editTextNumber.setText(String.valueOf(0));
 
             }
@@ -163,23 +157,12 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                String result =HttpClient.decreaseProduct(product, editTextNumber.getText().toString(), getToken());
+                //product = restClient.decreaseProduct(product, editTextNumber.getText().toString());
+                productViewModel.decreasing(product, Integer.decode(editTextNumber.getText().toString()));
+                product = productViewModel.getProductById(product.getId());
 
-                JSONObject productJson = null;
-                try {
-                    productJson = new JSONObject(result);
-                    product = new Product(
-                            Long.decode(productJson.getString("id")),
-                            productJson.getString("modelName"),
-                            productJson.getString("manufacturerName"),
-                            productJson.getDouble("price"),
-                            productJson.getInt("quantity")
-                    );
-                    textView19 = findViewById(R.id.textView19);
-                    textView19.setText(String.valueOf(product.getQuantity()));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                textView19 = findViewById(R.id.textView19);
+                textView19.setText(String.valueOf(product.getQuantity()));
                 editTextNumber.setText(String.valueOf(0));
 
             }

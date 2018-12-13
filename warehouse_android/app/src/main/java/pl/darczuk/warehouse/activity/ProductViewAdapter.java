@@ -18,7 +18,7 @@ public class ProductViewAdapter extends RecyclerView.Adapter<ProductViewAdapter.
     private List<Product> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public ProductViewAdapter(ArrayList<Product> items, OnListFragmentInteractionListener listener) {
+    public ProductViewAdapter(List<Product> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }

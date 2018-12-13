@@ -68,6 +68,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import pl.darczuk.warehouse.R;
 import pl.darczuk.warehouse.activity.util.Properties;
 
@@ -483,23 +486,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             String result = "";
 
+            SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
+            String uuidApp = sharedPref.getString("UUIDApp", "");
+
             try {
                 URL myUrl = new URL(Properties.getInstance().WAREHOUSE_URL+ "/login");
 
                 HttpURLConnection connection =(HttpURLConnection) myUrl.openConnection();
                 //Set methods and timeouts
-                int READ_TIMEOUT = 10000;
-                int CONNECTION_TIMEOUT = 15000;
+                //int READ_TIMEOUT = 10000;
+                //int CONNECTION_TIMEOUT = 15000;
 
                 connection.setRequestMethod("POST");
-                connection.setReadTimeout(READ_TIMEOUT);
-                connection.setConnectTimeout(CONNECTION_TIMEOUT);
+                //connection.setReadTimeout(READ_TIMEOUT);
+                //connection.setConnectTimeout(CONNECTION_TIMEOUT);
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
 
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("login", mEmail)
-                        .appendQueryParameter("password", mPassword);
+                        .appendQueryParameter("password", mPassword)
+                        .appendQueryParameter("uuidDevice", uuidApp);
                 String query = builder.build().getEncodedQuery();
 
                 OutputStream os = connection.getOutputStream();
@@ -536,25 +543,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 e.printStackTrace();
             }
 
-            Jws<Claims> jws = null;
+//            Jws<Claims> jws = null;
+//
+//            try {
+//                jws = Jwts.parser()
+//                        .setSigningKey("warehousewarehousewarehousewarehousewarehouse")
+//                        .parseClaimsJws(result);
+//
+//                // we can safely trust the JWT
+//            }
+//            catch (JwtException ex) {
+//
+//                    // we *cannot* use the JWT as intended by its creator
+//            }
+//
+//            jws.getSignature();
+//            role = jws.getBody().get("Role", String.class);
+//            token = result;
 
-            try {
-                jws = Jwts.parser()
-                        .setSigningKey("warehousewarehousewarehousewarehousewarehouse")
-                        .parseClaimsJws(result);
+            token = result.split(":")[0];
+            role = result.split(":")[1];
 
-                // we can safely trust the JWT
-            }
-            catch (JwtException ex) {
-
-                    // we *cannot* use the JWT as intended by its creator
-            }
-
-            jws.getSignature();
-            role = jws.getBody().get("Role", String.class);
-            token = result;
-
-            SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("Role", role);
             editor.putString("Token", token);
@@ -563,6 +572,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             SharedPreferences sharedPref2 = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
             String defaultValue = "";
             String token = sharedPref2.getString("Role", defaultValue);
+
 
             if(result == "")
                 return false;

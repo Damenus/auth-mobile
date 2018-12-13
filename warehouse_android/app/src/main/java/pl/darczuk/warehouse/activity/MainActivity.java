@@ -18,6 +18,8 @@ import android.view.View;
 import java.util.List;
 
 import pl.darczuk.warehouse.R;
+import pl.darczuk.warehouse.activity.database.ProductRepository;
+import pl.darczuk.warehouse.activity.database.ProductRoomDatabase;
 import pl.darczuk.warehouse.activity.model.Product;
 import pl.darczuk.warehouse.activity.util.Properties;
 import pl.darczuk.warehouse.activity.view.ProductViewModel;
@@ -28,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements ProductFragment.O
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private Properties properties;
+    private ProductViewModel productViewModel;
+    private RestClient restClient;
 
     public Activity getActivity(){
         return this;
@@ -60,6 +64,9 @@ public class MainActivity extends AppCompatActivity implements ProductFragment.O
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        productViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
+        restClient = new RestClient(this.getApplication());
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +78,13 @@ public class MainActivity extends AppCompatActivity implements ProductFragment.O
             }
         });
 
+        FloatingActionButton sync = findViewById(R.id.sync);
+        sync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                productViewModel.sync();
+            }
+        });
 
     }
 

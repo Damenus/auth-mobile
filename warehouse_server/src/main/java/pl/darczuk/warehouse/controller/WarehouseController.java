@@ -6,18 +6,10 @@ package pl.darczuk.warehouse.controller;
 //import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 //import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import pl.darczuk.warehouse.entity.Product;
+import pl.darczuk.warehouse.entity.*;
 import org.springframework.web.bind.annotation.*;
-import pl.darczuk.warehouse.entity.Role;
-import pl.darczuk.warehouse.entity.User;
 import pl.darczuk.warehouse.security.TokenGenerator;
 
-
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,8 +18,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.security.GeneralSecurityException;
-import java.security.Principal;
 import java.util.*;
 
 @RestController
@@ -36,7 +26,7 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 
     private WarehouseRepository repository;
     private UserRepository userRepository;
-    //private TokenRepository tokenRepository;
+    private TokenRepository tokenRepository;
     private ArrayList<String> tokens = new ArrayList<>() ;
 
     private TokenGenerator tokenGenerator = new TokenGenerator();
@@ -83,12 +73,14 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String login, @RequestParam String password) {
+    public String login(@RequestParam String login, @RequestParam String password, @RequestParam String uuidDevice) {
         User user = userRepository.findByLogin(login);
         if (user.getPassword().equals(password)) {
             String token = tokenGenerator.createToken(user);
+            Token t = tokenRepository.save(new Token(user, uuidDevice));
             tokens.add(token);
-            return token;
+            //return token;
+            return t.getHash()+":"+user.getRole();
         }
         else
             return "";
@@ -97,6 +89,15 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
     @PostMapping("/logout")
     public void logout(@RequestHeader(value="Authorization") String token) {
         tokens.remove(token);
+    }
+
+    @PostMapping("/testToken")
+    public String testToken(@RequestHeader(value="Authorization") String token) {
+        if (checkIfTokenExist(token)) {
+            return "OK";
+        } else {
+            return "404";
+        }
     }
 
     @PostMapping("/tokensignin")
@@ -237,30 +238,27 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
         User newUser = new User(login, password, uRole);
         return userRepository.save(newUser);
     }
-//
-//    @PostMapping("/registration")
-//    public User registration(@RequestBody User user) {
-//
-//        return userRepository.save(user);
-//    }
 
-    public WarehouseController(WarehouseRepository repository, UserRepository userRepository) {
+    public WarehouseController(WarehouseRepository repository, UserRepository userRepository, TokenRepository tokenRepository) {
 
         this.repository = repository;
         this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
     }
 
     private boolean checkIfTokenExist(String token) {
 
-        return tokens.contains(token);
+        return tokenRepository.existsById(token);//tokens.contains(token);
     }
 
     @GetMapping("/api/v1/product")
     @ResponseBody
     public List<Product> getAllProducts(@RequestHeader(value="Authorization") String token) {
 
-        if (checkIfTokenExist(token))
-            return repository.findAll();
+        if (checkIfTokenExist(token)) {
+            List<Product> dd = repository.findAll();
+            return dd;
+        }
         else
             return null;
     }
@@ -276,24 +274,21 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
             return null;
     }
 
-    @PostMapping("/api/v1/product")
-    public Product addProduct(@RequestHeader(value="Authorization") String token, @RequestParam String modelName, @RequestParam String manufacturerName, @RequestParam String price) {
+
+    @RequestMapping(value="/api/v1/product", method=RequestMethod.POST,consumes="application/json",produces="application/json")
+    @ResponseBody
+    public Product addProduct(@RequestHeader(value="Authorization") String token, @RequestBody Product newProduct) {
 
         if (checkIfTokenExist(token)) {
-            Product newProduct = new Product(modelName, manufacturerName, Double.valueOf(price));
             return repository.save(newProduct);
         } else
             return null;
     }
 
-//    @PostMapping("/api/v1/product")
-//    public Product addProduct2(@RequestBody Product newProduct) {
-//
-//        return repository.save(newProduct);
-//    }
 
     @DeleteMapping("/api/v1/product/{id}")
     public void deleteProduct(@RequestHeader(value="Authorization") String token, @PathVariable Long id) {
+
         if (checkIfTokenExist(token)) {
             repository.deleteById(id);
         }
@@ -304,7 +299,7 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 
         if (checkIfTokenExist(token)) {
             Product updatedProduct = repository.findById(id).get();
-            updatedProduct.increaseQuantity(quantity);
+            //updatedProduct.increaseQuantity(quantity);
             return repository.save(updatedProduct);
         } else
             return null;
@@ -315,8 +310,74 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 
         if (checkIfTokenExist(token)) {
             Product updatedProduct = repository.findById(id).get();
-            updatedProduct.decreaseQuantity(quantity);
+            //updatedProduct.decreaseQuantity(quantity);
             return repository.save(updatedProduct);
+        } else
+            return null;
+    }
+
+
+    @RequestMapping(value="/api/v1/sync", method=RequestMethod.POST,consumes="application/json",produces="application/json")
+    @ResponseBody
+    public List<ProductDto> syncAllProducts(@RequestHeader(value="Authorization") String token, @RequestBody List<ProductDto> productsFromDevice) {
+
+        if (checkIfTokenExist(token)) {
+            String uuidApp = tokenRepository.getOne(token).getDevice();
+            List<Product> productsFromServer = repository.findAll();
+            List<ProductDto> syncedProducts = new ArrayList<>();
+            Product productFromRepo;
+
+            Iterator<ProductDto> iterProductApp = productsFromDevice.iterator();
+            Iterator<Product> iterProductServer = productsFromServer.iterator();
+
+            while (iterProductApp.hasNext()) {
+                ProductDto productApp = iterProductApp.next();
+                Long idProduct = productApp.getId();
+                while (iterProductServer.hasNext()) {
+                    Product productServer = iterProductServer.next();
+                    //update
+                    if(productApp.getId() == idProduct) {
+//////////////
+                        //get prduct
+                        productFromRepo = repository.findById(idProduct).get();
+                        // update quantiti for the device
+                        productFromRepo.setQuantity(productApp.getQuantity(), uuidApp);
+                        int quantityWithoutDevice = productFromRepo.getQuantity() - productFromRepo.getQuantity(uuidApp);
+                        // prepare DTO
+                        syncedProducts.add(new ProductDto(productFromRepo.getId(), productFromRepo.getModelName(),  productFromRepo.getManufacturerName(), productFromRepo.getPrice(), quantityWithoutDevice));
+//////////////
+
+                        iterProductServer.remove();
+                        iterProductApp.remove();
+                        break;
+                    }
+                }
+            }
+
+
+            //remove
+            for (Product productServer: productsFromServer) {
+                repository.delete(repository.findById(productServer.getId()).get());
+            }
+
+            // add
+            for (ProductDto productApp: productsFromDevice) {
+                repository.save(new Product(productApp, uuidApp));
+            }
+
+//            for (ProductDto productFromRequest: productsDevice) {
+//                //get prduct
+//                productFromRepo = repository.findById(productFromRequest.getId()).get();
+//                // update quantiti for the device
+//                productFromRepo.setQuantity(productFromRequest.getQuantity(), uuidApp);
+//                int quantityWithoutDevice = productFromRepo.getQuantity() - productFromRepo.getQuantity(uuidApp);
+//                // prepare DTO
+//                syncedProducts.add(new ProductDto(productFromRepo.getId(), productFromRepo.getModelName(),  productFromRepo.getManufacturerName(), productFromRepo.getPrice(), quantityWithoutDevice));
+//            }
+
+
+            return syncedProducts;
+
         } else
             return null;
     }

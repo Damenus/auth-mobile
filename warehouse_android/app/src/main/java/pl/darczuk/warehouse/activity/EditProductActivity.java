@@ -1,6 +1,7 @@
 package pl.darczuk.warehouse.activity;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +25,8 @@ public class EditProductActivity extends AppCompatActivity {
     EditText editTextManufactureName;
     EditText editTextPrice;
 
+    RestClient restClient;
+
     public Activity getActivity(){
         return this;
     }
@@ -40,6 +43,8 @@ public class EditProductActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_product);
+
+        restClient = new RestClient(this.getApplication());
 
         product = getIntent().getParcelableExtra("Product");
 
@@ -62,7 +67,8 @@ public class EditProductActivity extends AppCompatActivity {
                 product.setModelName(editTextModelName.getText().toString());
                 product.setManufacturerName(editTextManufactureName.getText().toString());
                 product.setPrice(Double.valueOf(editTextPrice.getText().toString()));
-                HttpClient.saveProduct(product, getToken());
+                //HttpClient.saveProduct(product, getToken());
+                restClient.saveProduct(product);
 
                 finish();
             }

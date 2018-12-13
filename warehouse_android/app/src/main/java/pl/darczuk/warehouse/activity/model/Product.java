@@ -6,6 +6,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+//import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -13,15 +15,17 @@ import java.util.Objects;
 public class Product implements Serializable {
     @PrimaryKey
     @NonNull
+  //  @JsonProperty("id")
     private Long id;
+  //  @JsonProperty("modelName")
     private String modelName;
+ //   @JsonProperty("manufacturerName")
     private String manufacturerName;
+  //  @JsonProperty("price")
     private Double price;
-    private int quantity;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private int serverQuantity;
+  //  @JsonProperty("localDeltaChangeQuantity")
+    private int localDeltaChangeQuantity;
 
     public Product() {}
 
@@ -29,15 +33,39 @@ public class Product implements Serializable {
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
-        this.quantity = 0;
+        this.serverQuantity = 0;
+        this.localDeltaChangeQuantity = 0;
     }
 
-    public Product(Long id, String modelName, String manufacturerName, Double price, int quantity) {
+    public Product(Long id, String modelName, String manufacturerName, Double price, int serverQuantity) {
         this.id = id;
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
-        this.quantity = quantity;
+        this.serverQuantity = serverQuantity;
+        this.localDeltaChangeQuantity = 0;
+    }
+
+    public Product(Long id, String modelName, String manufacturerName, Double price, int serverQuantity, int localDeltaChangeQuantity) {
+        this.id = id;
+        this.modelName = modelName;
+        this.manufacturerName = manufacturerName;
+        this.price = price;
+        this.serverQuantity = serverQuantity;
+        this.localDeltaChangeQuantity = localDeltaChangeQuantity;
+    }
+
+    public Product(ProductDTO productDTO) {
+        this.id = productDTO.getId();
+        this.modelName = productDTO.getModelName();
+        this.manufacturerName = productDTO.getManufacturerName();
+        this.price = productDTO.getPrice();
+        this.serverQuantity = productDTO.getQuantity();
+        this.localDeltaChangeQuantity = 0;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
@@ -68,20 +96,36 @@ public class Product implements Serializable {
         this.price = price;
     }
 
+    public int getServerQuantity() {
+        return serverQuantity;
+    }
+
+    public void setServerQuantity(int serverQuantity) {
+        this.serverQuantity = serverQuantity;
+    }
+
+    public int getLocalDeltaChangeQuantity() {
+        return localDeltaChangeQuantity;
+    }
+
+    public void setLocalDeltaChangeQuantity(int localDeltaChangeQuantity) {
+        this.localDeltaChangeQuantity = localDeltaChangeQuantity;
+    }
+
     public int getQuantity() {
-        return quantity;
+        return serverQuantity + localDeltaChangeQuantity;
     }
 
     public void setQuantity(int quantity) {
-        this.quantity = quantity;
+        this.localDeltaChangeQuantity = quantity;
     }
 
     public void increaseQuantity(int quantity) {
-        this.quantity += quantity;
+        this.localDeltaChangeQuantity += quantity;
     }
 
     public void decreaseQuantity(int quantity) {
-        this.quantity -= quantity;
+        this.localDeltaChangeQuantity -= quantity;
     }
 
     @Override
@@ -91,7 +135,8 @@ public class Product implements Serializable {
                 ", modelName='" + modelName + '\'' +
                 ", manufacturerName='" + manufacturerName + '\'' +
                 ", price=" + price +
-                ", quantity=" + quantity +
+                ", serverQuantity=" + serverQuantity +
+                ", localDeltaChangeQuantity=" + localDeltaChangeQuantity +
                 '}';
     }
 
@@ -100,7 +145,8 @@ public class Product implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return quantity == product.quantity &&
+        return serverQuantity == product.serverQuantity &&
+                localDeltaChangeQuantity == product.localDeltaChangeQuantity &&
                 id == product.id &&
                 modelName == product.modelName &&
                 manufacturerName == product.manufacturerName &&
@@ -128,7 +174,8 @@ public class Product implements Serializable {
         modelName = in.readString();
         manufacturerName = in.readString();
         price = in.readDouble();
-        quantity = in.readInt();
+        serverQuantity = in.readInt();
+        localDeltaChangeQuantity = in.readInt();
     }
 
 }
