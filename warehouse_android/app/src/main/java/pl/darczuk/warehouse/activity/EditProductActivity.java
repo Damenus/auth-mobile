@@ -70,6 +70,7 @@ public class EditProductActivity extends AppCompatActivity {
                 product.setModelName(editTextModelName.getText().toString());
                 product.setManufacturerName(editTextManufactureName.getText().toString());
                 product.setPrice(Double.valueOf(editTextPrice.getText().toString()));
+                product.setLastTimeUpdate(System.currentTimeMillis());
                 //HttpClient.saveProduct(product, getToken());
                 //restClient.saveProduct(product);
                 mProductViewModel.insert(product);

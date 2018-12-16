@@ -19,7 +19,7 @@ public interface ProductDao {
     @Update
     int update(Product product); // return number updated rows
 
-    @Query("UPDATE product SET serverQuantity = :quantity  WHERE product.id = :id")
+    @Query("UPDATE product SET serverQuantity = :quantity WHERE product.id = :id")
     int updateFromDto(Long id, int quantity); // return number updated rows
 
     @Insert

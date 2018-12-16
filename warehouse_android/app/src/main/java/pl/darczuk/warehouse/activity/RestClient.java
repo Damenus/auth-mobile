@@ -156,7 +156,8 @@ public class RestClient {
                     productJson.getString("modelName"),
                     productJson.getString("manufacturerName"),
                     productJson.getDouble("price"),
-                    productJson.getInt("quantity")
+                    productJson.getInt("quantity"),
+                    Long.decode(productJson.getString("lastTimeUpdate"))
             );
 
         } catch (JSONException e) {
@@ -196,7 +197,8 @@ public class RestClient {
                                     jsonProducts.getJSONObject(i).getString("modelName"),
                                     jsonProducts.getJSONObject(i).getString("manufacturerName"),
                                     jsonProducts.getJSONObject(i).getDouble("price"),
-                                    jsonProducts.getJSONObject(i).getInt("quantity")
+                                    jsonProducts.getJSONObject(i).getInt("quantity"),
+                                    Long.decode(jsonProducts.getJSONObject(i).getString("lastTimeUpdate"))
                             )
                     );
                 } catch (JSONException e) {
@@ -350,6 +352,7 @@ public class RestClient {
                                     .put("manufacturerName", product.getManufacturerName())
                                     .put("price", product.getPrice())
                                     .put("quantity", product.getLocalDeltaChangeQuantity())
+                                    .put("lastTimeUpdate", product.getLastTimeUpdate())
                     );
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -398,7 +401,8 @@ public class RestClient {
                                     jsonProducts.getJSONObject(i).getString("modelName"),
                                     jsonProducts.getJSONObject(i).getString("manufacturerName"),
                                     jsonProducts.getJSONObject(i).getDouble("price"),
-                                    jsonProducts.getJSONObject(i).getInt("quantity")
+                                    jsonProducts.getJSONObject(i).getInt("quantity"),
+                                    Long.decode(jsonProducts.getJSONObject(i).getString("lastTimeUpdate"))
                             )
                     );
                 } catch (JSONException e) {

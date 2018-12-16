@@ -360,7 +360,7 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 
             // on Server but not on device, add to sendingProduct
             for (Product productServer: productsFromServer) {
-                if (lastTimeUpdatedDevice > curretnTime)
+                if (lastTimeUpdatedDevice < curretnTime)
                     repository.delete(repository.findById(productServer.getId()).get());
                 else
                     syncedProducts.add(new ProductDto(productServer.getId(), productServer.getModelName(),  productServer.getManufacturerName(), productServer.getPrice(), productServer.getQuantity(), productServer.getLastTimeUpdate()));
@@ -368,11 +368,14 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 
             // add
             for (ProductDto productApp: productsFromDevice) {
-                Product product = new Product(productApp, uuidApp);
-                product.getId();
-                Product newP = repository.save(product);
-                List<Product> productsFromServer2 = repository.findAll();
-                syncedProducts.add(new ProductDto(productApp.getId(), productApp.getModelName(),  productApp.getManufacturerName(), productApp.getPrice(), productApp.getQuantity(), curretnTime));
+                if (productApp.getLastTimeUpdate() > lastTimeUpdatedDevice) {
+                    Product product = new Product(productApp, uuidApp);
+                    product.getId();
+                    Product newP = repository.save(product);
+                    List<Product> productsFromServer2 = repository.findAll();
+                    syncedProducts.add(new ProductDto(newP.getId(), newP.getModelName(), newP.getManufacturerName(), newP.getPrice(), newP.getQuantity(), curretnTime));
+
+                }
             }
 
 //            for (ProductDto productFromRequest: productsDevice) {

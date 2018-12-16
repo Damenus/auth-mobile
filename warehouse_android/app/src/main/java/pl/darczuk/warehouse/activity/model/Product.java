@@ -26,33 +26,28 @@ public class Product implements Serializable {
     private int serverQuantity;
   //  @JsonProperty("localDeltaChangeQuantity")
     private int localDeltaChangeQuantity;
+    private Long lastTimeUpdate;
 
     public Product() {}
 
-    public Product(String modelName, String manufacturerName, Double price) {
-        this.modelName = modelName;
-        this.manufacturerName = manufacturerName;
-        this.price = price;
-        this.serverQuantity = 0;
-        this.localDeltaChangeQuantity = 0;
-    }
-
-    public Product(Long id, String modelName, String manufacturerName, Double price, int serverQuantity) {
+    public Product(Long id, String modelName, String manufacturerName, Double price, int serverQuantity, Long lastTimeUpdate) {
         this.id = id;
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
         this.serverQuantity = serverQuantity;
         this.localDeltaChangeQuantity = 0;
+        this.lastTimeUpdate = lastTimeUpdate;
     }
 
-    public Product(Long id, String modelName, String manufacturerName, Double price, int serverQuantity, int localDeltaChangeQuantity) {
+    public Product(Long id, String modelName, String manufacturerName, Double price, int serverQuantity, int localDeltaChangeQuantity, Long lastTimeUpdate) {
         this.id = id;
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
         this.serverQuantity = serverQuantity;
         this.localDeltaChangeQuantity = localDeltaChangeQuantity;
+        this.lastTimeUpdate = lastTimeUpdate;
     }
 
     public Product(ProductDTO productDTO) {
@@ -62,6 +57,7 @@ public class Product implements Serializable {
         this.price = productDTO.getPrice();
         this.serverQuantity = productDTO.getQuantity();
         this.localDeltaChangeQuantity = 0;
+        this.lastTimeUpdate = productDTO.getLastTimeUpdate();
     }
 
     public void setId(Long id) {
@@ -126,6 +122,14 @@ public class Product implements Serializable {
 
     public void decreaseQuantity(int quantity) {
         this.localDeltaChangeQuantity -= quantity;
+    }
+
+    public Long getLastTimeUpdate() {
+        return lastTimeUpdate;
+    }
+
+    public void setLastTimeUpdate(Long lastTimeUpdate) {
+        this.lastTimeUpdate = lastTimeUpdate;
     }
 
     @Override
