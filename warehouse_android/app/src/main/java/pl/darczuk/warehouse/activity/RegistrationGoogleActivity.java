@@ -313,13 +313,8 @@ public class RegistrationGoogleActivity extends AppCompatActivity implements Vie
                 URL myUrl = new URL(url);
 
                 HttpURLConnection connection =(HttpURLConnection) myUrl.openConnection();
-                //Set methods and timeouts
-                int READ_TIMEOUT = 10000;
-                int CONNECTION_TIMEOUT = 15000;
-
                 connection.setRequestMethod("POST");
-                connection.setReadTimeout(READ_TIMEOUT);
-                connection.setConnectTimeout(CONNECTION_TIMEOUT);
+
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
 

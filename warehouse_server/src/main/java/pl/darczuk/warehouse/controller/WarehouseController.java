@@ -101,7 +101,7 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
     }
 
     @PostMapping("/tokensignin")
-    public String tokenSignIn(@RequestParam String idTokenString) {
+    public String tokenSignIn(@RequestParam String idTokenString, String uuidDevice) {
 
 //        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
 //                // Specify the CLIENT_ID of the app that accesses the backend:
@@ -145,12 +145,18 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 
         Map<String,String> mapa = getMapFromGoogleTokenString(idTokenString);
         if (mapa != null) {
+//            String aud = mapa.get("aud");
+//            String audApp = "14642201020-6embjvm4hfmufb1bcf7ee323i52lffnu.apps.googleusercontent.com";
+//            if (aud != audApp) return "";
+//            String exp = mapa.get("exp");
+//            if (Long.valueOf(exp) <= System.currentTimeMillis()) return "";
             String email = mapa.get("email");
             User user = userRepository.findByLogin(email);
             if (user != null) {
                 String token = tokenGenerator.createToken(user);
+                Token t = tokenRepository.save(new Token(user, uuidDevice));
                 tokens.add(token);
-                return token;
+                return t.getHash()+":"+user.getRole();
             } else
                 return "";
         }
@@ -206,6 +212,13 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
         Map<String,String> mapa = getMapFromGoogleTokenString(idTokenString);
         if (mapa != null) {
             String email = mapa.get("email");
+            String aud = mapa.get("aud");
+//            String audApp = "14642201020-6embjvm4hfmufb1bcf7ee323i52lffnu.apps.googleusercontent.com";
+//            if (aud.equals(audApp)) {
+//                return "";
+//            }
+//            String exp = mapa.get("exp");
+//            if (Long.valueOf(exp) <= System.currentTimeMillis()) return "";
             User newUser = new User(email, "", uRole);
             User user = userRepository.findByLogin(email);
             if (user == null) {

@@ -643,23 +643,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             String result = "";
             String token = params[0];
 
+            SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
+            String uuidApp = sharedPref.getString("UUIDApp", "");
+
             try {
 
                 URL myUrl = new URL(url);
 
                 HttpURLConnection connection =(HttpURLConnection) myUrl.openConnection();
-                //Set methods and timeouts
-                int READ_TIMEOUT = 10000;
-                int CONNECTION_TIMEOUT = 15000;
 
                 connection.setRequestMethod("POST");
-                connection.setReadTimeout(READ_TIMEOUT);
-                connection.setConnectTimeout(CONNECTION_TIMEOUT);
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
 
                 Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("idTokenString", token);
+                        .appendQueryParameter("idTokenString", token)
+                        .appendQueryParameter("uuidDevice", uuidApp);
                 String query = builder.build().getEncodedQuery();
 
                 OutputStream os = connection.getOutputStream();
@@ -696,29 +695,32 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
 
 
-            Jws<Claims> jws = null;
+//            Jws<Claims> jws = null;
+//
+//            try {
+//                jws = Jwts.parser()
+//                        .setSigningKey("warehousewarehousewarehousewarehousewarehouse")
+//                        .parseClaimsJws(result);
+//
+//                // we can safely trust the JWT
+//            }
+//            catch (JwtException ex) {
+//
+//                // we *cannot* use the JWT as intended by its creator
+//            }
+//
+//            jws.getSignature();
+//            role = jws.getBody().get("Role", String.class);
+//            token = result;
 
-            try {
-                jws = Jwts.parser()
-                        .setSigningKey("warehousewarehousewarehousewarehousewarehouse")
-                        .parseClaimsJws(result);
+            token = result.split(":")[0];
+            role = result.split(":")[1];
 
-                // we can safely trust the JWT
-            }
-            catch (JwtException ex) {
-
-                // we *cannot* use the JWT as intended by its creator
-            }
-
-            jws.getSignature();
-            role = jws.getBody().get("Role", String.class);
-            token = result;
-
-            SharedPreferences sharedPref = getActivity().getSharedPreferences("warehouse", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("Role", role);
             editor.putString("Token", token);
             editor.commit();
+
 
             return result;
         }

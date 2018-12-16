@@ -425,6 +425,7 @@ public class RestClient {
     public static class RestClientAsyncTask extends AsyncTask<String, Void, String> {
 
         static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        static final MediaType XML = MediaType.parse("application/json; charset=utf-8");
 
         OkHttpClient client;
         String url;
