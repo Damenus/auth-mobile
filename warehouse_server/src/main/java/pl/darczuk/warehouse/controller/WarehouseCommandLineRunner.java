@@ -22,21 +22,21 @@ public class WarehouseCommandLineRunner implements CommandLineRunner {
     public void run(String... strings) throws Exception {
 
         warehouseRepository.save(
-                new Product("Galaxy S9", "Samsung", 3000.0, 40));
+                new Product("Galaxy S9", "Samsung", 3000.0, 40, System.currentTimeMillis()));
         warehouseRepository.save(
-                new Product("Galaxy S8", "Samsung", 2800.0, 40));
+                new Product("Galaxy S8", "Samsung", 2800.0, 40, System.currentTimeMillis()));
         warehouseRepository.save(
-                new Product("6", "OnePlus", 1800.0, 30));
+                new Product("6", "OnePlus", 1800.0, 30, System.currentTimeMillis()));
         warehouseRepository.save(
-                new Product("6T", "OnePlus", 2200.0, 30));
+                new Product("6T", "OnePlus", 2200.0, 30, System.currentTimeMillis()));
         warehouseRepository.save(
-                new Product("X", "Apple", 4999.99, 50));
+                new Product("X", "Apple", 4999.99, 50, System.currentTimeMillis()));
         warehouseRepository.save(
-                new Product("XS", "Apple", 5230.50, 100));
+                new Product("XS", "Apple", 5230.50, 100, System.currentTimeMillis()));
         warehouseRepository.save(
-                new Product("Pixel 2 XL", "Google", 4400.0, 20));
+                new Product("Pixel 2 XL", "Google", 4400.0, 20, System.currentTimeMillis()));
 
-        warehouseRepository.findAll().forEach(System.out::println);
+     //   warehouseRepository.findAll().forEach(System.out::println);
 
         userRepository.save(
                 new User("manager", "admin", Role.MENAGER));

@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
 
 import java.util.List;
@@ -82,7 +83,10 @@ public class MainActivity extends AppCompatActivity implements ProductFragment.O
         sync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                productViewModel.sync();
+                int numberUpdatedProducts = productViewModel.sync();
+
+                Toast.makeText(getActivity(), "Updated " + numberUpdatedProducts + " products!",
+                        Toast.LENGTH_LONG).show();
             }
         });
 

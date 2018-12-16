@@ -16,12 +16,14 @@ public class Token {
     @ManyToOne
     User user;
     String device;
+    Long lastUpdate;
 
     public Token() {}
 
     public Token(User user, String device) {
         this.user = user;
         this.device = device;
+        this.lastUpdate = System.currentTimeMillis();
     }
 
     public String getHash() {
@@ -46,5 +48,13 @@ public class Token {
 
     public void setDevice(String device) {
         this.device = device;
+    }
+
+    public Long getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Long lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 }

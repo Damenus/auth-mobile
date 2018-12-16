@@ -1,10 +1,10 @@
 package pl.darczuk.warehouse.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,8 +16,10 @@ public class Product implements Serializable {
     private String modelName;
     private String manufacturerName;
     private Double price;
-    private HashMap<String, Integer> quantity;
+    @ElementCollection
+    private Map<String, Integer> quantity;
     //private int quantity;
+    private Long lastTimeUpdate;
 
     public void setId(Long id) {
         this.id = id;
@@ -31,15 +33,17 @@ public class Product implements Serializable {
         this.price = price;
         this.quantity = new HashMap<>();
         //this.quantity = 0;
+        this.lastTimeUpdate = System.currentTimeMillis();
     }
 
-    public Product(String modelName, String manufacturerName, Double price, int quantity) {
+    public Product(String modelName, String manufacturerName, Double price, int quantity, Long lastTimeUpdate) {
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
         this.quantity = new HashMap<>();
         this.quantity.put("admin", quantity);
         //this.quantity = quantity;
+        this.lastTimeUpdate = lastTimeUpdate;
     }
 
     public Product(ProductDto productDTO, String uuidDevice) {
@@ -49,6 +53,7 @@ public class Product implements Serializable {
         this.price = productDTO.getPrice();
         this.quantity = new HashMap<>();
         this.quantity.put(uuidDevice, productDTO.getQuantity());
+        this.lastTimeUpdate = System.currentTimeMillis();
     }
 
     public Long getId() {
@@ -79,6 +84,14 @@ public class Product implements Serializable {
         this.price = price;
     }
 
+    public Long getLastTimeUpdate() {
+        return lastTimeUpdate;
+    }
+
+    public void setLastTimeUpdate(Long lastTimeUpdate) {
+        this.lastTimeUpdate = lastTimeUpdate;
+    }
+
     public int getQuantity(String id) {
         int dd = quantity.getOrDefault(id, 0);
         return dd;
@@ -91,7 +104,10 @@ public class Product implements Serializable {
     }
 
     public void setQuantity(int quantity, String id) {
-        this.quantity.replace(id, quantity);
+        if (this.quantity.containsKey(id))
+            this.quantity.replace(id, quantity);
+        else
+            this.quantity.put(id, quantity);
     }
 
     public void increaseQuantity(int quantity, String id) {

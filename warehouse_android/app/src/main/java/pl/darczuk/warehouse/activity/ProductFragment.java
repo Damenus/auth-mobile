@@ -66,7 +66,9 @@ public class ProductFragment extends Fragment {
 
         restClient = new RestClient(this.getActivity().getApplication());
         mProductViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
-        //mProductViewModel.nuke();
+        mProductViewModel.nuke();
+        List<Product> products = restClient.getAllProducts();
+        mProductViewModel.insertProducts(products);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);

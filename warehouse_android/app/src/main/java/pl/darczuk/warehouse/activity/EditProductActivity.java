@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import pl.darczuk.warehouse.R;
 import pl.darczuk.warehouse.activity.model.Product;
+import pl.darczuk.warehouse.activity.view.ProductViewModel;
 
 public class EditProductActivity extends AppCompatActivity {
 
@@ -26,6 +27,7 @@ public class EditProductActivity extends AppCompatActivity {
     EditText editTextPrice;
 
     RestClient restClient;
+    ProductViewModel mProductViewModel;
 
     public Activity getActivity(){
         return this;
@@ -45,6 +47,7 @@ public class EditProductActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_product);
 
         restClient = new RestClient(this.getApplication());
+        mProductViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
 
         product = getIntent().getParcelableExtra("Product");
 
@@ -68,7 +71,8 @@ public class EditProductActivity extends AppCompatActivity {
                 product.setManufacturerName(editTextManufactureName.getText().toString());
                 product.setPrice(Double.valueOf(editTextPrice.getText().toString()));
                 //HttpClient.saveProduct(product, getToken());
-                restClient.saveProduct(product);
+                //restClient.saveProduct(product);
+                mProductViewModel.insert(product);
 
                 finish();
             }

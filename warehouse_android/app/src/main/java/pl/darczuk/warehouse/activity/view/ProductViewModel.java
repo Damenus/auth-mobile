@@ -48,18 +48,19 @@ public class ProductViewModel extends AndroidViewModel {
     public void decreasing(Product product, int quantity) {
         int newQuantity = product.getLocalDeltaChangeQuantity() - quantity;
 
-        if (newQuantity < 0)
-            return;
+        //if (newQuantity < 0)
+           // return;
 
         product.setQuantity(newQuantity);
         mRepository.update(product);
     }
 
-    public void sync(){
+    public int sync(){
 
+        List<ProductDTO> productsFromServer;
         List<Product> productsFromApp = mRepository.getAllProductsAsync();
         if(productsFromApp != null) {
-            List<ProductDTO> productsFromServer;
+
             productsFromServer = restClient.sync(productsFromApp);
 
             // porównanie list by sprawdzić czy nie ma nowych produktów bo insert a nie update
@@ -109,7 +110,11 @@ public class ProductViewModel extends AndroidViewModel {
 //                mRepository.updateFromDto(productDto);
 //
 //            }
+
+
+            return productsFromServer.size();
         }
+        return 0;
     }
 
     public void nuke(){

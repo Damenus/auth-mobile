@@ -7,20 +7,17 @@ public class ProductDto {
     private String manufacturerName;
     private Double price;
     private int quantity;
+    private Long lastTimeUpdate;
 
     public ProductDto(){}
 
-    public ProductDto(Long id, int quantity) {
-        this.id = id;
-        this.quantity = quantity;
-    }
-
-    public ProductDto(Long id, String modelName, String manufacturerName, Double price, int quantity) {
+    public ProductDto(Long id, String modelName, String manufacturerName, Double price, int quantity, Long lastTimeUpdate) {
         this.id = id;
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
         this.quantity = quantity;
+        this.lastTimeUpdate = lastTimeUpdate;
     }
 
     public Long getId() {
@@ -61,5 +58,13 @@ public class ProductDto {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Long getLastTimeUpdate() {
+        return lastTimeUpdate;
+    }
+
+    public void setLastTimeUpdate(Long lastTimeUpdate) {
+        this.lastTimeUpdate = lastTimeUpdate;
     }
 }

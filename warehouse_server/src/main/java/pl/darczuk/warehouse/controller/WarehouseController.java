@@ -323,6 +323,8 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 
         if (checkIfTokenExist(token)) {
             String uuidApp = tokenRepository.getOne(token).getDevice();
+            Long lastTimeUpdatedDevice = tokenRepository.getOne(token).getLastUpdate();
+            Long curretnTime = System.currentTimeMillis();
             List<Product> productsFromServer = repository.findAll();
             List<ProductDto> syncedProducts = new ArrayList<>();
             Product productFromRepo;
@@ -342,9 +344,10 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
                         productFromRepo = repository.findById(idProduct).get();
                         // update quantiti for the device
                         productFromRepo.setQuantity(productApp.getQuantity(), uuidApp);
+                        repository.save(productFromRepo);
                         int quantityWithoutDevice = productFromRepo.getQuantity() - productFromRepo.getQuantity(uuidApp);
                         // prepare DTO
-                        syncedProducts.add(new ProductDto(productFromRepo.getId(), productFromRepo.getModelName(),  productFromRepo.getManufacturerName(), productFromRepo.getPrice(), quantityWithoutDevice));
+                        syncedProducts.add(new ProductDto(productFromRepo.getId(), productFromRepo.getModelName(),  productFromRepo.getManufacturerName(), productFromRepo.getPrice(), quantityWithoutDevice, productFromRepo.getLastTimeUpdate()));
 //////////////
 
                         iterProductServer.remove();
@@ -355,14 +358,21 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
             }
 
 
-            //remove
+            // on Server but not on device, add to sendingProduct
             for (Product productServer: productsFromServer) {
-                repository.delete(repository.findById(productServer.getId()).get());
+                if (lastTimeUpdatedDevice > curretnTime)
+                    repository.delete(repository.findById(productServer.getId()).get());
+                else
+                    syncedProducts.add(new ProductDto(productServer.getId(), productServer.getModelName(),  productServer.getManufacturerName(), productServer.getPrice(), productServer.getQuantity(), productServer.getLastTimeUpdate()));
             }
 
             // add
             for (ProductDto productApp: productsFromDevice) {
-                repository.save(new Product(productApp, uuidApp));
+                Product product = new Product(productApp, uuidApp);
+                product.getId();
+                Product newP = repository.save(product);
+                List<Product> productsFromServer2 = repository.findAll();
+                syncedProducts.add(new ProductDto(productApp.getId(), productApp.getModelName(),  productApp.getManufacturerName(), productApp.getPrice(), productApp.getQuantity(), curretnTime));
             }
 
 //            for (ProductDto productFromRequest: productsDevice) {
@@ -375,6 +385,10 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 //                syncedProducts.add(new ProductDto(productFromRepo.getId(), productFromRepo.getModelName(),  productFromRepo.getManufacturerName(), productFromRepo.getPrice(), quantityWithoutDevice));
 //            }
 
+
+            Token deviceInfo = tokenRepository.getOne(token);
+            deviceInfo.setLastUpdate(curretnTime);
+            tokenRepository.save(deviceInfo);
 
             return syncedProducts;
 
