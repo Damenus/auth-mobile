@@ -213,12 +213,13 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
         if (mapa != null) {
             String email = mapa.get("email");
             String aud = mapa.get("aud");
-//            String audApp = "14642201020-6embjvm4hfmufb1bcf7ee323i52lffnu.apps.googleusercontent.com";
-//            if (aud.equals(audApp)) {
+            String audApp = "14642201020-6embjvm4hfmufb1bcf7ee323i52lffnu.apps.googleusercontent.com";
+            if (!aud.equals(audApp)) {
+                return "";
+            }
+            String exp = mapa.get("exp");
+//            if (Long.valueOf(exp) <= System.currentTimeMillis())
 //                return "";
-//            }
-//            String exp = mapa.get("exp");
-//            if (Long.valueOf(exp) <= System.currentTimeMillis()) return "";
             User newUser = new User(email, "", uRole);
             User user = userRepository.findByLogin(email);
             if (user == null) {
@@ -360,7 +361,16 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
                         repository.save(productFromRepo);
                         int quantityWithoutDevice = productFromRepo.getQuantity() - productFromRepo.getQuantity(uuidApp);
                         // prepare DTO
-                        syncedProducts.add(new ProductDto(productFromRepo.getId(), productFromRepo.getModelName(),  productFromRepo.getManufacturerName(), productFromRepo.getPrice(), quantityWithoutDevice, productFromRepo.getLastTimeUpdate()));
+                        syncedProducts.add(
+                                new ProductDto(
+                                        productFromRepo.getId(),
+                                        productFromRepo.getModelName(),
+                                        productFromRepo.getManufacturerName(),
+                                        productFromRepo.getPrice(),
+                                        productFromRepo.getSize(),
+                                        quantityWithoutDevice,
+                                        null,
+                                        productFromRepo.getLastTimeUpdate()));
 //////////////
 
                         iterProductServer.remove();
@@ -376,7 +386,18 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
                 if (lastTimeUpdatedDevice < curretnTime)
                     repository.delete(repository.findById(productServer.getId()).get());
                 else
-                    syncedProducts.add(new ProductDto(productServer.getId(), productServer.getModelName(),  productServer.getManufacturerName(), productServer.getPrice(), productServer.getQuantity(), productServer.getLastTimeUpdate()));
+                    syncedProducts.add(
+                            new ProductDto(
+                                    productServer.getId(),
+                                    productServer.getModelName(),
+                                    productServer.getManufacturerName(),
+                                    productServer.getPrice(),
+                                    productServer.getSize(),
+                                    productServer.getQuantity(),
+                                    null,
+                                    productServer.getLastTimeUpdate()
+                            )
+                    );
             }
 
             // add
@@ -386,7 +407,18 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
                     product.getId();
                     Product newP = repository.save(product);
                     List<Product> productsFromServer2 = repository.findAll();
-                    syncedProducts.add(new ProductDto(newP.getId(), newP.getModelName(), newP.getManufacturerName(), newP.getPrice(), newP.getQuantity(), curretnTime));
+                    syncedProducts.add(
+                            new ProductDto(
+                                    newP.getId(),
+                                    newP.getModelName(),
+                                    newP.getManufacturerName(),
+                                    newP.getPrice(),
+                                    newP.getSize(),
+                                    newP.getQuantity(),
+                                    null,
+                                    curretnTime
+                            )
+                    );
 
                 }
             }

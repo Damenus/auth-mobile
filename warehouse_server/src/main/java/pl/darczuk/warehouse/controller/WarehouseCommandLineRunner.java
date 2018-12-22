@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import pl.darczuk.warehouse.entity.Role;
 import pl.darczuk.warehouse.entity.User;
 
+import java.util.ArrayList;
+
 @Component
 public class WarehouseCommandLineRunner implements CommandLineRunner {
 
@@ -21,20 +23,30 @@ public class WarehouseCommandLineRunner implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
 
+        Product pixel2 = new Product("Pixel 2 XL", "Google", 4400.0, 5.0, 20, System.currentTimeMillis());
+        Product pixel3 = new Product("Pixel 3", "Google", 5400.0, 5.0, 20, System.currentTimeMillis());
+
+        ArrayList<Product> list1 = new ArrayList<>();
+        list1.add(pixel2);
+        list1.add(pixel3);
+        Product bundle1 = new Product("Google bundle", "Google", 12400.0, 5.0,5, System.currentTimeMillis(), list1);
+
         warehouseRepository.save(
-                new Product("Galaxy S9", "Samsung", 3000.0, 40, System.currentTimeMillis()));
+                new Product("Galaxy S9", "Samsung", 3000.0, 5.5, 40, System.currentTimeMillis()));
         warehouseRepository.save(
-                new Product("Galaxy S8", "Samsung", 2800.0, 40, System.currentTimeMillis()));
+                new Product("Galaxy S8", "Samsung", 2800.0, 5.5, 40, System.currentTimeMillis()));
         warehouseRepository.save(
-                new Product("6", "OnePlus", 1800.0, 30, System.currentTimeMillis()));
+                new Product("6", "OnePlus", 1800.0, 5.8, 30,  System.currentTimeMillis()));
         warehouseRepository.save(
-                new Product("6T", "OnePlus", 2200.0, 30, System.currentTimeMillis()));
+                new Product("6T", "OnePlus", 2200.0, 5.8, 30, System.currentTimeMillis()));
         warehouseRepository.save(
-                new Product("X", "Apple", 4999.99, 50, System.currentTimeMillis()));
+                new Product("X", "Apple", 4999.99, 5.5, 50, System.currentTimeMillis()));
         warehouseRepository.save(
-                new Product("XS", "Apple", 5230.50, 100, System.currentTimeMillis()));
-        warehouseRepository.save(
-                new Product("Pixel 2 XL", "Google", 4400.0, 20, System.currentTimeMillis()));
+                new Product("XS", "Apple", 5230.50, 4.25, 100, System.currentTimeMillis()));
+        warehouseRepository.save(pixel2);
+        warehouseRepository.save(pixel3);
+
+        warehouseRepository.save(bundle1);
 
      //   warehouseRepository.findAll().forEach(System.out::println);
 

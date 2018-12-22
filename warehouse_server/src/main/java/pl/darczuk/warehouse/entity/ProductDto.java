@@ -1,22 +1,28 @@
 package pl.darczuk.warehouse.entity;
 
+import java.util.List;
+
 public class ProductDto {
 
     private Long id;
     private String modelName;
     private String manufacturerName;
     private Double price;
+    private Double size;
     private int quantity;
+    List<Product> products;
     private Long lastTimeUpdate;
 
     public ProductDto(){}
 
-    public ProductDto(Long id, String modelName, String manufacturerName, Double price, int quantity, Long lastTimeUpdate) {
+    public ProductDto(Long id, String modelName, String manufacturerName, Double price, Double size, int quantity, List<Product> products, Long lastTimeUpdate) {
         this.id = id;
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
+        this.size = size;
         this.quantity = quantity;
+        this.products = products;
         this.lastTimeUpdate = lastTimeUpdate;
     }
 
@@ -58,6 +64,22 @@ public class ProductDto {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Double getSize() {
+        return size;
+    }
+
+    public void setSize(Double size) {
+        this.size = size;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
     public Long getLastTimeUpdate() {

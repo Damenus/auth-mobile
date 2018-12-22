@@ -2,10 +2,7 @@ package pl.darczuk.warehouse.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Entity
@@ -16,9 +13,11 @@ public class Product implements Serializable {
     private String modelName;
     private String manufacturerName;
     private Double price;
+    private Double size;
     @ElementCollection
     private Map<String, Integer> quantity;
-    //private int quantity;
+    @ManyToMany
+    List<Product> products;
     private Long lastTimeUpdate;
 
     public void setId(Long id) {
@@ -27,22 +26,35 @@ public class Product implements Serializable {
 
     public Product() {}
 
-    public Product(String modelName, String manufacturerName, Double price) {
+    public Product(String modelName, String manufacturerName, Double price, Double size) {
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
+        this.size = size;
         this.quantity = new HashMap<>();
         //this.quantity = 0;
         this.lastTimeUpdate = System.currentTimeMillis();
     }
 
-    public Product(String modelName, String manufacturerName, Double price, int quantity, Long lastTimeUpdate) {
+    public Product(String modelName, String manufacturerName, Double price, Double size, int quantity, Long lastTimeUpdate) {
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
+        this.size = size;
         this.quantity = new HashMap<>();
         this.quantity.put("admin", quantity);
         //this.quantity = quantity;
+        this.lastTimeUpdate = lastTimeUpdate;
+    }
+
+    public Product(String modelName, String manufacturerName, Double price, Double size, int quantity, Long lastTimeUpdate, List<Product> listProducts) {
+        this.modelName = modelName;
+        this.manufacturerName = manufacturerName;
+        this.price = price;
+        this.size = size;
+        this.quantity = new HashMap<>();
+        this.quantity.put("admin", quantity);
+        this.products = listProducts;
         this.lastTimeUpdate = lastTimeUpdate;
     }
 
@@ -51,6 +63,7 @@ public class Product implements Serializable {
         this.modelName = productDTO.getModelName();
         this.manufacturerName = productDTO.getManufacturerName();
         this.price = productDTO.getPrice();
+        this.size =  productDTO.getSize();
         this.quantity = new HashMap<>();
         this.quantity.put(uuidDevice, productDTO.getQuantity());
         this.lastTimeUpdate = System.currentTimeMillis();
@@ -82,6 +95,14 @@ public class Product implements Serializable {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Double getSize() {
+        return size;
+    }
+
+    public void setSize(Double size) {
+        this.size = size;
     }
 
     public Long getLastTimeUpdate() {
@@ -116,6 +137,14 @@ public class Product implements Serializable {
 
     public void decreaseQuantity(int quantity, String id) {
         this.quantity.merge(id, quantity, (integer, integer2) -> integer - integer2);
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
     @Override
