@@ -147,6 +147,19 @@ public class Product implements Serializable {
         this.products = products;
     }
 
+    public String getProductsBundleId() {
+        String productsIds = "";
+        List<Long> productsLongIds = new ArrayList<>();
+        for (Product product: products) {
+            productsLongIds.add(product.getId());
+        }
+
+        productsIds = productsLongIds.toString();
+
+        return productsIds;
+
+    }
+
     @Override
     public String toString() {
         return "Product{" +

@@ -1,10 +1,7 @@
 package pl.darczuk.warehouse.activity;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
@@ -12,36 +9,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
-import pl.darczuk.warehouse.activity.dao.ProductDao;
 import pl.darczuk.warehouse.activity.model.Product;
 import pl.darczuk.warehouse.activity.model.ProductDTO;
 import pl.darczuk.warehouse.activity.util.Properties;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 public class RestClient {
 
@@ -151,13 +132,25 @@ public class RestClient {
         JSONObject productJson = null;
         try {
             productJson = new JSONObject(json);
+
+            List<Long> idProductsOfBundle = null;
+            if(!productJson.isNull("products")) {
+                JSONArray list = productJson.getJSONArray("products");
+                for (int i=0;i<list.length();i++) {
+                    idProductsOfBundle.add(list.getJSONObject(i).getLong("id"));
+                }
+
+            }
+
             product = new Product(
                     Long.decode(productJson.getString("id")),
                     productJson.getString("modelName"),
                     productJson.getString("manufacturerName"),
                     productJson.getDouble("price"),
+                    productJson.getDouble("size"),
                     productJson.getInt("quantity"),
-                    Long.decode(productJson.getString("lastTimeUpdate"))
+                    Long.decode(productJson.getString("lastTimeUpdate")),
+                    idProductsOfBundle.toString()
             );
 
         } catch (JSONException e) {
@@ -191,14 +184,28 @@ public class RestClient {
         if (jsonProducts != null) {
             for (int i=0;i<jsonProducts.length();i++){
                 try {
+                    String idProductsOfBundleString = "";
+                    List<Long> idProductsOfBundle = new ArrayList<>();
+                    String test = jsonProducts.getJSONObject(i).getString("products");
+                    if(!test.equals("[]")) {
+                        JSONArray list = jsonProducts.getJSONObject(i).getJSONArray("products");
+                        for (int j=0;j<list.length();j++) {
+                            //idProductsOfBundleString += list.getJSONObject(j).getLong("id") + ",";
+                            idProductsOfBundle.add(list.getJSONObject(j).getLong("id"));
+                        }
+                        idProductsOfBundleString = idProductsOfBundle.toString();
+                    }
+
                     products.add(
                             new Product(
                                     Long.decode(jsonProducts.getJSONObject(i).getString("id")),
                                     jsonProducts.getJSONObject(i).getString("modelName"),
                                     jsonProducts.getJSONObject(i).getString("manufacturerName"),
                                     jsonProducts.getJSONObject(i).getDouble("price"),
+                                    jsonProducts.getJSONObject(i).getDouble("size"),
                                     jsonProducts.getJSONObject(i).getInt("quantity"),
-                                    Long.decode(jsonProducts.getJSONObject(i).getString("lastTimeUpdate"))
+                                    Long.decode(jsonProducts.getJSONObject(i).getString("lastTimeUpdate")),
+                                    idProductsOfBundleString
                             )
                     );
                 } catch (JSONException e) {
@@ -351,6 +358,7 @@ public class RestClient {
                                     .put("modelName", product.getModelName())
                                     .put("manufacturerName", product.getManufacturerName())
                                     .put("price", product.getPrice())
+                                    .put("size", product.getSize())
                                     .put("quantity", product.getLocalDeltaChangeQuantity())
                                     .put("lastTimeUpdate", product.getLastTimeUpdate())
                     );
@@ -395,16 +403,34 @@ public class RestClient {
         if (jsonProducts != null) {
             for (int i=0;i<jsonProducts.length();i++){
                 try {
-                    syncProducts.add(
-                            new ProductDTO(
-                                    Long.decode(jsonProducts.getJSONObject(i).getString("id")),
-                                    jsonProducts.getJSONObject(i).getString("modelName"),
-                                    jsonProducts.getJSONObject(i).getString("manufacturerName"),
-                                    jsonProducts.getJSONObject(i).getDouble("price"),
-                                    jsonProducts.getJSONObject(i).getInt("quantity"),
-                                    Long.decode(jsonProducts.getJSONObject(i).getString("lastTimeUpdate"))
-                            )
-                    );
+                    List<String> idProductsOfBundle = null;
+                    if(!jsonProducts.getJSONObject(i).isNull("products")) {
+//                        JSONArray list = jsonProducts.getJSONObject(i).getJSONArray("products");
+//                        for (int j=0;j<list.length();j++) {
+//                            idProductsOfBundle.add(list.getJSONObject(j).getLong("id"));
+//                        }
+                        String list = jsonProducts.getJSONObject(i).getString("products");
+                        idProductsOfBundle = Arrays.asList(
+                                list
+                                        .replace("[", "")
+                                        .replace("]", "")
+                                        .replace(" ", "")
+                                        .split(","));
+                    }
+
+                        syncProducts.add(
+                                new ProductDTO(
+                                        Long.decode(jsonProducts.getJSONObject(i).getString("id")),
+                                        jsonProducts.getJSONObject(i).getString("modelName"),
+                                        jsonProducts.getJSONObject(i).getString("manufacturerName"),
+                                        jsonProducts.getJSONObject(i).getDouble("price"),
+                                        jsonProducts.getJSONObject(i).getDouble("size"),
+                                        jsonProducts.getJSONObject(i).getInt("quantity"),
+                                        Long.decode(jsonProducts.getJSONObject(i).getString("lastTimeUpdate")),
+                                        idProductsOfBundle.toString()
+                                )
+                        );
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

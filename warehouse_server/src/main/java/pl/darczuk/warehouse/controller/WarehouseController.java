@@ -369,7 +369,7 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
                                         productFromRepo.getPrice(),
                                         productFromRepo.getSize(),
                                         quantityWithoutDevice,
-                                        null,
+                                        productFromRepo.getProductsBundleId(),
                                         productFromRepo.getLastTimeUpdate()));
 //////////////
 
@@ -394,7 +394,7 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
                                     productServer.getPrice(),
                                     productServer.getSize(),
                                     productServer.getQuantity(),
-                                    null,
+                                    productServer.getProductsBundleId(),
                                     productServer.getLastTimeUpdate()
                             )
                     );
@@ -415,7 +415,7 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
                                     newP.getPrice(),
                                     newP.getSize(),
                                     newP.getQuantity(),
-                                    null,
+                                    newP.getProductsBundleId(),
                                     curretnTime
                             )
                     );

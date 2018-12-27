@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 //import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -23,31 +24,37 @@ public class Product implements Serializable {
     private String manufacturerName;
   //  @JsonProperty("price")
     private Double price;
+    private Double size;
     private int serverQuantity;
   //  @JsonProperty("localDeltaChangeQuantity")
     private int localDeltaChangeQuantity;
     private Long lastTimeUpdate;
+    private String productsBundle;
 
     public Product() {}
 
-    public Product(Long id, String modelName, String manufacturerName, Double price, int serverQuantity, Long lastTimeUpdate) {
+    public Product(Long id, String modelName, String manufacturerName, Double price, Double size, int serverQuantity, Long lastTimeUpdate, String productsBundle) {
         this.id = id;
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
+        this.size = size;
         this.serverQuantity = serverQuantity;
         this.localDeltaChangeQuantity = 0;
         this.lastTimeUpdate = lastTimeUpdate;
+        this.productsBundle = productsBundle;
     }
 
-    public Product(Long id, String modelName, String manufacturerName, Double price, int serverQuantity, int localDeltaChangeQuantity, Long lastTimeUpdate) {
+    public Product(Long id, String modelName, String manufacturerName, Double price, Double size, int serverQuantity, int localDeltaChangeQuantity, Long lastTimeUpdate, String productsBundle) {
         this.id = id;
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
+        this.size = size;
         this.serverQuantity = serverQuantity;
         this.localDeltaChangeQuantity = localDeltaChangeQuantity;
         this.lastTimeUpdate = lastTimeUpdate;
+        this.productsBundle = productsBundle;
     }
 
     public Product(ProductDTO productDTO) {
@@ -55,9 +62,11 @@ public class Product implements Serializable {
         this.modelName = productDTO.getModelName();
         this.manufacturerName = productDTO.getManufacturerName();
         this.price = productDTO.getPrice();
+        this.size = productDTO.getSize();
         this.serverQuantity = productDTO.getQuantity();
         this.localDeltaChangeQuantity = 0;
         this.lastTimeUpdate = productDTO.getLastTimeUpdate();
+        this.productsBundle = productDTO.getProductsBundle();
     }
 
     public void setId(Long id) {
@@ -90,6 +99,14 @@ public class Product implements Serializable {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Double getSize() {
+        return size;
+    }
+
+    public void setSize(Double size) {
+        this.size = size;
     }
 
     public int getServerQuantity() {
@@ -130,6 +147,14 @@ public class Product implements Serializable {
 
     public void setLastTimeUpdate(Long lastTimeUpdate) {
         this.lastTimeUpdate = lastTimeUpdate;
+    }
+
+    public String getProductsBundle() {
+        return productsBundle;
+    }
+
+    public void setProductsBundle(String productsBundle) {
+        this.productsBundle = productsBundle;
     }
 
     @Override

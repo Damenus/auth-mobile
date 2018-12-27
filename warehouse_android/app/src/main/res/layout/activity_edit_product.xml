@@ -49,6 +49,20 @@
         android:inputType="numberDecimal"
         android:text="21.37" />
 
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/size" />
+
+    <EditText
+        android:id="@+id/editTextSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:text="5.5" />
+
     <Button
         android:id="@+id/buttonEdit"
         android:layout_width="match_parent"

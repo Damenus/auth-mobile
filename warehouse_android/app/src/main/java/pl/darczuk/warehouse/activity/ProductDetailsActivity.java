@@ -14,11 +14,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Arrays;
+import java.util.List;
 
 import pl.darczuk.warehouse.R;
 import pl.darczuk.warehouse.activity.model.Product;
@@ -108,12 +112,49 @@ public class ProductDetailsActivity extends AppCompatActivity {
         textView19 = findViewById(R.id.textView19);
         textView19.setText(String.valueOf(product.getQuantity()));
 
+        TextView textView20 = findViewById(R.id.textView20);
+        textView20.setText("size");
+        TextView textView21 = findViewById(R.id.textView21);
+        textView21.setText(String.valueOf(product.getSize()));
+
         editTextNumber = findViewById(R.id.editTextNumber);
 
         Button buttonDecrease = findViewById(R.id.buttonDecrease);
         Button buttonIncrease = findViewById(R.id.buttonIncrease);
         Button buttonMinus = findViewById(R.id.buttonMinus);
         Button buttonPlus = findViewById(R.id.buttonPlus);
+
+
+        if(!product.getProductsBundle().equals("")) {
+            LinearLayout bundleLayout = findViewById(R.id.bundleLayout);
+            bundleLayout.setOrientation(LinearLayout.VERTICAL);
+
+            TextView textView = new TextView(this);
+            textView.setText("List of products from bundle:");
+            bundleLayout.addView(textView);
+
+            String list = product.getProductsBundle();
+            List<String> idProductsOfBundle = Arrays.asList(
+                    list
+                            .replace("[", "")
+                            .replace("]", "")
+                            .replace(" ", "")
+                            .split(","));
+
+            Product productFromBundle;
+            for(int i =0; i < idProductsOfBundle.size(); i++) {
+                productFromBundle = productViewModel.getProductById(Long.decode(idProductsOfBundle.get(i)));
+                TextView descrptionOfProductFromBundle = new TextView(this);
+                descrptionOfProductFromBundle.setText(
+                        productFromBundle.getId() + " " +
+                        productFromBundle.getManufacturerName() + " " +
+                        productFromBundle.getModelName() + " "
+                );
+                bundleLayout.addView(descrptionOfProductFromBundle);
+            }
+
+
+        }
 
         buttonMinus.setOnClickListener( new View.OnClickListener() {
 

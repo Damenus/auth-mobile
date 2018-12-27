@@ -1,23 +1,29 @@
 package pl.darczuk.warehouse.activity.model;
 
+import java.util.List;
+
 public class ProductDTO {
 
     private Long id;
     private String modelName;
     private String manufacturerName;
     private Double price;
+    private Double size;
     private int quantity;
     private Long lastTimeUpdate;
+    private String productsBundle;
 
     public ProductDTO(){}
 
-    public ProductDTO(Long id, String modelName, String manufacturerName, Double price, int quantity, Long lastTimeUpdate) {
+    public ProductDTO(Long id, String modelName, String manufacturerName, Double price, Double size, int quantity, Long lastTimeUpdate, String productsBundle) {
         this.id = id;
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
         this.price = price;
+        this.size = size;
         this.quantity = quantity;
         this.lastTimeUpdate = lastTimeUpdate;
+        this.productsBundle = productsBundle;
     }
 
     public Long getId() {
@@ -60,11 +66,27 @@ public class ProductDTO {
         this.price = price;
     }
 
+    public Double getSize() {
+        return size;
+    }
+
+    public void setSize(Double size) {
+        this.size = size;
+    }
+
     public Long getLastTimeUpdate() {
         return lastTimeUpdate;
     }
 
     public void setLastTimeUpdate(Long lastTimeUpdate) {
         this.lastTimeUpdate = lastTimeUpdate;
+    }
+
+    public String getProductsBundle() {
+        return productsBundle;
+    }
+
+    public void setProductsBundle(String productsBundle) {
+        this.productsBundle = productsBundle;
     }
 }

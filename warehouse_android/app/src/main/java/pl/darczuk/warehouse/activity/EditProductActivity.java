@@ -25,6 +25,7 @@ public class EditProductActivity extends AppCompatActivity {
     EditText editTextModelName;
     EditText editTextManufactureName;
     EditText editTextPrice;
+    EditText editTextSize;
 
     RestClient restClient;
     ProductViewModel mProductViewModel;
@@ -54,12 +55,14 @@ public class EditProductActivity extends AppCompatActivity {
         editTextModelName = findViewById(R.id.editTextModelName);
         editTextManufactureName = findViewById(R.id.editTextManufactureName);
         editTextPrice = findViewById(R.id.editTextPrice);
+        editTextSize = findViewById(R.id.editTextSize);
 
         if (product != null) {
 
             editTextModelName.setText(product.getModelName());
             editTextManufactureName.setText(product.getManufacturerName());
             editTextPrice.setText(product.getPrice().toString());
+            editTextSize.setText(product.getSize().toString());
         }
 
         Button buttonEdit = findViewById(R.id.buttonEdit);
@@ -71,6 +74,7 @@ public class EditProductActivity extends AppCompatActivity {
                 product.setManufacturerName(editTextManufactureName.getText().toString());
                 product.setPrice(Double.valueOf(editTextPrice.getText().toString()));
                 product.setLastTimeUpdate(System.currentTimeMillis());
+                product.setSize(Double.valueOf(editTextSize.getText().toString()));
                 //HttpClient.saveProduct(product, getToken());
                 //restClient.saveProduct(product);
                 mProductViewModel.insert(product);

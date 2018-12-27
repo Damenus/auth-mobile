@@ -114,8 +114,10 @@ public class ProductFragment extends Fragment {
                             "modelName",
                             "manufacturerName",
                             12.5,
+                            5.5,
                             12,
-                            System.currentTimeMillis()
+                            System.currentTimeMillis(),
+                            ""
                     )
             );
 

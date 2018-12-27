@@ -10,12 +10,12 @@ public class ProductDto {
     private Double price;
     private Double size;
     private int quantity;
-    List<Product> products;
+    String products;
     private Long lastTimeUpdate;
 
     public ProductDto(){}
 
-    public ProductDto(Long id, String modelName, String manufacturerName, Double price, Double size, int quantity, List<Product> products, Long lastTimeUpdate) {
+    public ProductDto(Long id, String modelName, String manufacturerName, Double price, Double size, int quantity, String products, Long lastTimeUpdate) {
         this.id = id;
         this.modelName = modelName;
         this.manufacturerName = manufacturerName;
@@ -74,11 +74,11 @@ public class ProductDto {
         this.size = size;
     }
 
-    public List<Product> getProducts() {
+    public String getProducts() {
         return products;
     }
 
-    public void setProducts(List<Product> products) {
+    public void setProducts(String products) {
         this.products = products;
     }
 
