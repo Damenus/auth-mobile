@@ -474,6 +474,7 @@ public class RestClient {
 
             requestBuilder.url(url);
             requestBuilder.addHeader("Authorization", this.token);
+            requestBuilder.addHeader("User-Agent", "mobile/0.2");
 
             if(requestMethod == RequestMethodEnum.POST) {
                 requestBuilder.post(RequestBody.create(JSON, params[0]));

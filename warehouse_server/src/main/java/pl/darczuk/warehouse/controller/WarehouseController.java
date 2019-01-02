@@ -267,11 +267,25 @@ public class WarehouseController { //extends WebSecurityConfigurerAdapter {
 
     @GetMapping("/api/v1/product")
     @ResponseBody
-    public List<Product> getAllProducts(@RequestHeader(value="Authorization") String token) {
+    public List<Product> getAllProducts(@RequestHeader(value="Authorization") String token, @RequestHeader(value ="User-Agent") String userAgent) {
 
         if (checkIfTokenExist(token)) {
-            List<Product> dd = repository.findAll();
-            return dd;
+            if(userAgent.equals("mobile/0.2")) {
+                List<Product> dd = repository.findAll();
+                return dd;
+
+            } else {
+                List<Product> dd = repository.findAll();
+                List<Product> products = new ArrayList<>();
+
+                for (Product product : dd) {
+                    if (product.getProducts().size() == 0) {
+                        products.add(product);
+                    }
+                }
+
+                return products;
+            }
         }
         else
             return null;

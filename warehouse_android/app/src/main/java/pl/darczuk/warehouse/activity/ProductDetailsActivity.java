@@ -110,7 +110,30 @@ public class ProductDetailsActivity extends AppCompatActivity {
         TextView textView18 = findViewById(R.id.textView18);
         textView18.setText("quantity");
         textView19 = findViewById(R.id.textView19);
-        textView19.setText(String.valueOf(product.getQuantity()));
+        if(product.getProductsBundle().equals("")) {
+            textView19.setText(String.valueOf(product.getQuantity()));
+        } else {
+            int minimum_quantity = Integer.MAX_VALUE;
+
+            String list = product.getProductsBundle();
+            List<String> idProductsOfBundle = Arrays.asList(
+                    list
+                            .replace("[", "")
+                            .replace("]", "")
+                            .replace(" ", "")
+                            .split(","));
+
+            Product productFromBundle;
+            for(int i =0; i < idProductsOfBundle.size(); i++) {
+                productFromBundle = productViewModel.getProductById(Long.decode(idProductsOfBundle.get(i)));
+
+                if(minimum_quantity>productFromBundle.getQuantity()) {
+                    minimum_quantity = productFromBundle.getQuantity();
+                }
+            }
+
+            textView19.setText(String.valueOf(minimum_quantity));
+        }
 
         TextView textView20 = findViewById(R.id.textView20);
         textView20.setText("size");
@@ -184,11 +207,39 @@ public class ProductDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //product = restClient.increaseProduct(product, editTextNumber.getText().toString());
-                productViewModel.increasing(product, Integer.decode(editTextNumber.getText().toString()));
-                product = productViewModel.getProductById(product.getId());
 
                 textView19 = findViewById(R.id.textView19);
-                textView19.setText(String.valueOf(product.getQuantity()));
+
+                if(product.getProductsBundle().equals("")) {
+                    productViewModel.increasing(product, Integer.decode(editTextNumber.getText().toString()));
+                    product = productViewModel.getProductById(product.getId());
+                    textView19.setText(String.valueOf(product.getQuantity()));
+                } else {
+                    productViewModel.increasing(product, Integer.decode(editTextNumber.getText().toString()));
+                    product = productViewModel.getProductById(product.getId());
+                    int minimum_quantity = Integer.MAX_VALUE;
+
+                    String list = product.getProductsBundle();
+                    List<String> idProductsOfBundle = Arrays.asList(
+                            list
+                                    .replace("[", "")
+                                    .replace("]", "")
+                                    .replace(" ", "")
+                                    .split(","));
+
+                    Product productFromBundle;
+                    for(int i =0; i < idProductsOfBundle.size(); i++) {
+                        productFromBundle = productViewModel.getProductById(Long.decode(idProductsOfBundle.get(i)));
+                        productViewModel.increasing(productFromBundle, Integer.decode(editTextNumber.getText().toString()));
+
+                        if(minimum_quantity>productFromBundle.getQuantity()) {
+                            minimum_quantity = productFromBundle.getQuantity();
+                        }
+                    }
+
+                    textView19.setText(String.valueOf(minimum_quantity));
+                }
+
                 editTextNumber.setText(String.valueOf(0));
 
             }
@@ -198,12 +249,39 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                //product = restClient.decreaseProduct(product, editTextNumber.getText().toString());
-                productViewModel.decreasing(product, Integer.decode(editTextNumber.getText().toString()));
-                product = productViewModel.getProductById(product.getId());
 
                 textView19 = findViewById(R.id.textView19);
-                textView19.setText(String.valueOf(product.getQuantity()));
+
+                if(product.getProductsBundle().equals("")) {
+                    productViewModel.decreasing(product, Integer.decode(editTextNumber.getText().toString()));
+                    product = productViewModel.getProductById(product.getId());
+                    textView19.setText(String.valueOf(product.getQuantity()));
+                } else {
+                    productViewModel.decreasing(product, Integer.decode(editTextNumber.getText().toString()));
+                    product = productViewModel.getProductById(product.getId());
+                    int minimum_quantity = Integer.MAX_VALUE;
+
+                    String list = product.getProductsBundle();
+                    List<String> idProductsOfBundle = Arrays.asList(
+                            list
+                                    .replace("[", "")
+                                    .replace("]", "")
+                                    .replace(" ", "")
+                                    .split(","));
+
+                    Product productFromBundle;
+                    for(int i =0; i < idProductsOfBundle.size(); i++) {
+                        productFromBundle = productViewModel.getProductById(Long.decode(idProductsOfBundle.get(i)));
+                        productViewModel.decreasing(productFromBundle, Integer.decode(editTextNumber.getText().toString()));
+
+                        if(minimum_quantity>productFromBundle.getQuantity()) {
+                            minimum_quantity = productFromBundle.getQuantity();
+                        }
+                    }
+
+                    textView19.setText(String.valueOf(minimum_quantity));
+                }
+
                 editTextNumber.setText(String.valueOf(0));
 
             }
